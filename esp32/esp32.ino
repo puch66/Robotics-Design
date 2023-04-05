@@ -52,6 +52,10 @@ void setup() {
   server.begin();
   Serial.println("HTTP server started");
   delay(100); 
+
+  //let the mock server know your ip  
+  message = "/esp32?init=yes&esp32_ip=" + WiFi.localIP().toString();
+  send_message(server_ip, server_port, message);
 }
 
 void loop() {

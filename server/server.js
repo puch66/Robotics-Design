@@ -69,7 +69,7 @@ app.get('/esp32',function(req,res){
     if(req.query.esp32_ip) {
         esp32_ip = req.query.esp32_ip;
         console.log("New ip for esp32: " + esp32_ip);
-        res.send("I'm glad to hear you, " + esp32_ip);
+        if(!req.query.init) res.send("I'm glad to hear you, " + esp32_ip);
     }
 });
 
