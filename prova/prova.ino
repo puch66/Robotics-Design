@@ -6,9 +6,9 @@
 #define SERVOMINsg90  120 // This is the 'minimum' pulse length count (out of 4096)
 #define SERVOMAXsg90  500 // This is the 'maximum' pulse length count (out of 4096)
 #define SERVO_FREQ 50 // Analog servos run at ~50 Hz update
-int servo_channel = 0;
-int posizione = 0;
-int angolo = 0;
+int servo = 0;
+int servo_pos[16];
+int servo_angle = 0;
 Adafruit_PWMServoDriver controller = Adafruit_PWMServoDriver(0x40);
 void setup() {
   Serial.begin(115200);
@@ -17,24 +17,38 @@ void setup() {
   controller.setOscillatorFrequency(27000000);
   controller.setPWMFreq(SERVO_FREQ);  // Analog servos run at ~50 Hz updates
   delay(10);
-  posizione = 100;
-  servo_channel = 1; // Canale utilizzato
+  for(servo=0;servo<16;servo++){ servo_pos[servo] = 130;};
+  servo = 0; // Canale utilizzato
 }
 void loop() {
   if (Serial.available() > 0) {
     int digit = Serial.read();
-    if( digit == 113){ posizione = posizione +1;};
-    if( digit == 119){ posizione = posizione +10;};
-    if( digit == 101){ posizione = posizione +50;};
-    if( digit == 97){ posizione = posizione -1;};
-    if( digit == 115){ posizione = posizione -10;};
-    if( digit == 100){ posizione = posizione -50;};
-    Serial.print("bit: ");
-    Serial.println(posizione);
+    if(digit >= 48 && digit <= 57){
+      if( digit == 48){ servo = 0;}; 
+      if( digit == 49){ servo = 1;};
+      if( digit == 50){ servo = 2;};
+      if( digit == 51){ servo = 3;};
+      if( digit == 52){ servo = 4;};
+      if( digit == 53){ servo = 5;};
+      if( digit == 54){ servo = 6;};
+      if( digit == 55){ servo = 7;};
+      if( digit == 56){ servo = 8;};
+      if( digit == 57){ servo = 9;};
+      Serial.print("servo_channel: ");
+      Serial.println(servo);
+    }
+    if( digit == 113){ servo_pos[servo] += 1;};  // q
+    if( digit == 119){ servo_pos[servo] += 10;}; // w
+    if( digit == 101){ servo_pos[servo] += 50;}; // e
+    if( digit == 97){  servo_pos[servo] -= 1;};   // a
+    if( digit == 115){ servo_pos[servo] -= 10;}; // s
+    if( digit == 100){ servo_pos[servo] -= 50;}; // d
+    Serial.print("servo_channel: ");
+    Serial.print(servo);
+    Serial.print(" bit: ");
+    Serial.println(servo_pos[servo]);
   }
-  controller.setPWM(0, 0, posizione);
-  controller.setPWM(1, 0, posizione);
-  
+  controller.setPWM(servo, 0, servo_pos[servo]);
   delay(100);
 }
 
