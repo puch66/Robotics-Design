@@ -1,12 +1,12 @@
 #include <Adafruit_PWMServoDriver.h>
-
 #include <Wire.h>
+
 #define I2C_SDA 4
 #define I2C_SCL 5
 #define SERVOMINsg90  120 // This is the 'minimum' pulse length count (out of 4096)
 #define SERVOMAXsg90  500 // This is the 'maximum' pulse length count (out of 4096)
 #define SERVO_FREQ 50 // Analog servos run at ~50 Hz update
-int servo = 0;
+byte servo = 0;
 int servo_pos[16];
 int servo_angle = 0;
 Adafruit_PWMServoDriver controller = Adafruit_PWMServoDriver(0x40);
