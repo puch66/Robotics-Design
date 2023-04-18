@@ -28,6 +28,7 @@ class movement{
   private int init_pos,fin_pos;
   byte velocity;
   bool motion_in_progress = false;
+  byte t0;
   public:
     movement(byte servo){
       this->servo = servo;
@@ -39,13 +40,14 @@ class movement{
         this->velocity = velocity;
         if(velocity<0) this->velocity = 0;
         else if(velocity>1) this->velocity = 100;
-        motion_in_progress == true;
+        motion_in_progress = true;
+        t0 = int(millis()/100);
       }
     }
     void make_motion(){
-      elseif(vel{
-      if(velocity < 0) velocity = 0;
-      else if(velocity > 1) velocity = 100;
-      servo_pos =  int((1-velocity)*servo_pos + velocity*fin_pos);
+      if(motion_in_progress == true){
+        servo_pos =  int((1-velocity)*servo_pos + velocity*fin_pos);
+        controller.setPWM(servo, 0, servo_pos);
+      }
     }
 };
