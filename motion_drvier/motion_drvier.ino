@@ -107,5 +107,6 @@ class movement{
           return true;
         }
         else return false;
+      }
     }
 };
