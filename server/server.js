@@ -61,6 +61,31 @@ app.post('/move',function(req,res){
     });
 });
 
+app.post('/control',function(req,res){
+    //console.log(req.body);
+    var down = req.body.up ? req.body.up : "up";
+    var servo = req.body.servo_channel;
+    var speed = req.body.speed;
+    //console.log(down, servo, speed);
+    
+    var url = 'http://' + esp32_ip + ':' + esp32_port + '/controller?servo=' + servo + '&down=' + down + '&servo_pos=' + speed;
+    //console.log(url);
+    request2server({
+        url: url, 
+        method: 'GET',
+        headers: {'content-type': 'application/json'}
+    }, function(error, response, body){
+        if(error) {
+            console.log(error);
+            res.redirect('/error');
+        }
+        else 
+        {
+            res.redirect('/');
+        }
+    });
+});
+
 app.get('/error', function(req,res){
     res.sendFile(__dirname + '/public/404.html');
 });
