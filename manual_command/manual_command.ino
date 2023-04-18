@@ -60,11 +60,28 @@ void loop() {
     if( digit == 97){  servo_pos[servo] -= 1;};   // a
     if( digit == 115){ servo_pos[servo] -= 10;}; // s
     if( digit == 100){ servo_pos[servo] -= 50;}; // d
+    
+    if(servo == 6 || servo == 7){
+      byte other_servo = 7;
+      if(servo == 7) other_servo = 6;
+      if( digit == 113){ servo_pos[other_servo] -= 1;};  // q
+      if( digit == 119){ servo_pos[other_servo] -= 10;}; // w
+      if( digit == 101){ servo_pos[other_servo] -= 50;}; // e
+      if( digit == 97){  servo_pos[other_servo] += 1;};   // a
+      if( digit == 115){ servo_pos[other_servo] += 10;}; // s
+      if( digit == 100){ servo_pos[other_servo] += 50;}; // d
+    }
     Serial.print("servo_channel: ");
     Serial.print(servo);
     Serial.print(" bit: ");
     Serial.println(servo_pos[servo]);
   }
   controller.setPWM(servo, 0, servo_pos[servo]);
+  if(servo == 6 || servo == 7){
+    byte other_servo = 7;
+    if(servo == 7) other_servo = 6;
+    controller.setPWM(other_servo, 0, servo_pos[other_servo]);
+     
+    }
   delay(100);
 }
