@@ -87,7 +87,7 @@ void setup() {
   //start esp32 server
   server.on("/", handle_root);
   server.on("/controller", handle_controller);
-  server.on("/emotion", handle_emotion)
+  server.on("/emotion", handle_emotion);
 
   server.begin();
   Serial.println("HTTP server started");
