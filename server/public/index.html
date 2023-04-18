@@ -9,20 +9,76 @@
 <body style = "background-color: green;">
 
     <div class="header">
-        <h1>Fake server</h1>
+        <h1>Robot controller</h1>
     </div>
-
-    <form method="post" action="/move">
-        <div class="form-group">
-          <label for="servo_channel">Servo_channel</label>
-          <input type="number" class="form-control" id="servo_channel" name="servo_channel" placeholder="0">
-        </div>
-        <div class="form-group">
-          <label for="angle">Angle</label>
-          <input type="number" class="form-control" id="angle" name="angle" placeholder="">
-        </div>
-        <button type="submit" class="btn btn-primary">Move</button>
-      </form>
+    <div class="row" style="margin: 0%;">
+      <div class="col col-5">
+        <form method="post" action="/control">
+          <div class="form-group">
+            <label for="servo_channel">Servo_channel</label>
+            <input type="number" class="form-control" id="servo_channel" name="servo_channel" placeholder="0">
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="up" value="down" id="up">
+            <label class="form-check-label" for="up">
+              Down
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="speed" id="low" value="low">
+            <label class="form-check-label" for="low">
+              Low speed
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="speed" id="medium" value="medium">
+            <label class="form-check-label" for="medium">
+              Medium speed
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="speed" id="high" value="high">
+            <label class="form-check-label" for="high">
+              High speed
+            </label>
+          </div>
+          <button type="submit" class="btn btn-primary">Control</button>
+        </form>
+      </div>
+      <div class="col col-5">
+        <form method="post" action="/control">
+          <div class="form-group">
+            <label for="servo_channel">Servo_channel</label>
+            <input type="number" class="form-control" id="servo_channel" name="servo_channel" placeholder="0">
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="up" value="down" id="up">
+            <label class="form-check-label" for="up">
+              Down
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="speed" id="low" value="low">
+            <label class="form-check-label" for="low">
+              Low speed
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="speed" id="medium" value="medium">
+            <label class="form-check-label" for="medium">
+              Medium speed
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="speed" id="high" value="high">
+            <label class="form-check-label" for="high">
+              High speed
+            </label>
+          </div>
+          <button type="submit" class="btn btn-primary">Control</button>
+        </form>
+      </div>
+    </div>
 
 </body>
 </html>
