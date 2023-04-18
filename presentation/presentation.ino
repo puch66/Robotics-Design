@@ -1,10 +1,10 @@
 #include <Adafruit_PWMServoDriver.h>
 #include <Wire.h>
 
-//#define I2C_SDA 21 //esp8266
-//#define I2C_SCL 22 //esp8266
-#define I2C_SDA 4 //esp8266
-#define I2C_SCL 5 //esp8266
+#define I2C_SDA 21 //esp32
+#define I2C_SCL 22 //esp32
+//#define I2C_SDA 4 //esp8266
+//#define I2C_SCL 5 //esp8266
 #define SERVO_FREQ 50 // Analog servos run at ~50 Hz update
 const int S0_OPEN=100,  S0_CLOSE=380; 
 const int S1_CLOSE=100, S1_OPEN=400; 

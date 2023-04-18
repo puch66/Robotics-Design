@@ -33,7 +33,7 @@ class movement{
     movement(byte servo){
       this->servo = servo;
     }
-    void new_position(int init_pos,int fin_pos, byte velocity){
+    void new_position(int init_pos,int fin_pos, byte velocity){ // min = 1 max = 100
       if(motion_in_progress == false){
         this->init_pos = init_pos;
         this->fin_pos = fin_pos;
@@ -46,7 +46,8 @@ class movement{
     }
     void make_motion(){
       if(motion_in_progress == true){
-        servo_pos =  int((1-velocity)*servo_pos + velocity*fin_pos);
+        if(millis()
+        servo_pos =  int((1-velocity/100)*servo_pos + (velocity/100)*fin_pos);
         controller.setPWM(servo, 0, servo_pos);
       }
     }
