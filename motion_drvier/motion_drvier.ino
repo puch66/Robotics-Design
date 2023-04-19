@@ -1,10 +1,8 @@
 #include <Wire.h>
 #include "movements.h"
 
-movement s[16];
 Transition t0[2] = {{S0_OPEN, 0.05}, {S0_CLOSE, 0.05}};
 Transition t1[4] = {{S1_OPEN, 0.05}, {S1_CLOSE, 0.05}, {S1_OPEN, 0.05}, {S1_CLOSE, 0.05}};
-bool done[16];
 
 void setup(){
   Serial.begin(115200);
@@ -64,7 +62,3 @@ void loop(){
  }
 
 }
-
-
-
-

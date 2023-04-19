@@ -86,6 +86,27 @@ app.post('/control',function(req,res){
     });
 });
 
+app.post('/emotion',function(req,res){
+    //console.log(req.body);
+    var emotion = req.body.emotion;
+    
+    var url = 'http://' + esp32_ip + ':' + esp32_port + '/emotion?emotion=' + emotion;
+    request2server({
+        url: url, 
+        method: 'GET',
+        headers: {'content-type': 'application/json'}
+    }, function(error, response, body){
+        if(error) {
+            console.log(error);
+            res.redirect('/error');
+        }
+        else 
+        {
+            res.redirect('/');
+        }
+    });
+});
+
 app.get('/error', function(req,res){
     res.sendFile(__dirname + '/public/404.html');
 });
