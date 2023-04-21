@@ -12,12 +12,12 @@ unsigned char state = IDLE;
 bool blinking;
 
 //WiFi credentials
-const char* ssid     = "Vodafone-33573324"; //"AndroidAPFD5D";   //"TIM-22838165";   //"HUAWEI nova 5T";         // The SSID (name) of the Wi-Fi network you want to connect to
-const char* password = "f3545j5a52vxfht"; //"valerioo";        //"2rihtKdclmlITqJ82BfhZ9xk";         //"portanna";     // The password of the Wi-Fi network
+const char* ssid     = "AndroidAPFD5D"; //"Vodafone-33573324";   //"TIM-22838165";   //"HUAWEI nova 5T";         // The SSID (name) of the Wi-Fi network you want to connect to
+const char* password = "valerioo";  //"f3545j5a52vxfht";       //"2rihtKdclmlITqJ82BfhZ9xk";         //"portanna";     // The password of the Wi-Fi network
 
 //set variables for client connection
 WiFiClient client;
-char* server_ip = "192.168.1.2";
+char* server_ip = "192.168.142.177";
 int server_port = 80;
 
 //Set web server port number to 80
@@ -37,7 +37,7 @@ void setup() {
   delay(10);
   Serial.println('\n');
 
-  for(byte servo=0;servo<6;servo++){
+  for(byte servo=0;servo<8;servo++){
     s[servo] = movement(servo);
     done[servo] = false;
   }
@@ -69,6 +69,8 @@ void setup() {
   //let the mock server know your ip  
   message = "/esp32?init=yes&esp32_ip=" + WiFi.localIP().toString();
   send_message(server_ip, server_port, message);
+
+  i = 0;
 }
 
 void loop() {
@@ -85,7 +87,9 @@ void loop() {
     response = "";
   }
 
-  if(state == 1) if(blink()) state = IDLE;
+  if(state == 1) if(undo_happy()) state = IDLE;
+
+  if(state == 2) if(do_happy()) state = IDLE;
 
 }
 
@@ -117,26 +121,25 @@ void handle_controller() {
   if( server.arg("servo") && server.arg("servo_pos")) {
     int servo = atoi(server.arg("servo").c_str());
     int up = 1;
-    int fin_pos;
     if(server.arg("down").equals("down")) {
       up*= -1;
     }
     if(server.arg("servo_pos").equals("low")) {
-       fin_pos = s[servo].get_servo_pos() + 1*up;
+      s[servo].set_servo_pos(s[servo].get_servo_pos() + 1*up);
     }
     else if(server.arg("servo_pos").equals("medium")) {
-      fin_pos = s[servo].get_servo_pos() + 10*up;
+      s[servo].set_servo_pos(s[servo].get_servo_pos() + 10*up);
     }
     else if(server.arg("servo_pos").equals("high")) {
-      fin_pos = s[servo].get_servo_pos() + 50*up;
+      s[servo].set_servo_pos(s[servo].get_servo_pos() + 50*up);
     }
   
     Serial.print("Moving servo number ");
     Serial.println(servo);
     Serial.print("to bit: ");
-    Serial.println(fin_pos);
-    Transition t = {fin_pos, 0.05};
-    s[servo].new_position(t);
+    Serial.println(s[servo].get_servo_pos());
+    controller.setPWM(servo, 0, s[servo].get_servo_pos());
+    delay(10);
     server.send(200, "text/html", "<p>Hello world!</p>");
   }
 }
@@ -147,5 +150,13 @@ void handle_emotion() {
     state = HAPPY;
     server.send(200, "text/html", "<p>Hello world!</p>");
   }
+  if(server.arg("emotion").equals("sad")) {
+    Serial.println("******START HAPPY*******");
+    state = SAD;
+    server.send(200, "text/html", "<p>Hello world!</p>");
+  }
 }
+
+
+
 
