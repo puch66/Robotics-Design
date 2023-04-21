@@ -2,8 +2,8 @@
 
 Adafruit_PWMServoDriver controller = Adafruit_PWMServoDriver(0x40);
 
-bool done[16];
-movement s[16];
+bool done[16];  // sequence of transitions in execution or not
+movement s[16]; // servo_object
 
 movement::movement() {
 
