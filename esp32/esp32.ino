@@ -4,11 +4,16 @@
 #include <Wire.h>
 #include "movements.h"
 
-#define IDLE 0;
-#define HAPPY 1;
-#define SAD 2;
+enum State {
+  IDLE = 0,
+  HAPPY = 1,
+  SAD = 2,
+  ANGRY = 3,
+  SHOCKED = 4,
+  DOUBTUFUL = 5
+};
 
-unsigned char state = IDLE;
+State state = IDLE;
 bool blinking;
 
 //WiFi credentials
@@ -87,9 +92,9 @@ void loop() {
     response = "";
   }
 
-  if(state == 1) if(undo_happy()) state = IDLE;
+  if(state == HAPPY) if(undo_happy()) state = IDLE;
 
-  if(state == 2) if(do_happy()) state = IDLE;
+  if(state == SAD) if(do_happy()) state = IDLE;
 
 }
 
