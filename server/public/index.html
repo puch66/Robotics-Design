@@ -18,6 +18,10 @@
             <label for="servo_channel">Servo_channel</label>
             <input type="number" class="form-control" id="servo_channel" name="servo_channel" placeholder="0">
           </div>
+          <div class="form-group">
+            <label for="power">Power</label>
+            <input type="number" class="form-control" id="power" name="power" placeholder="0">
+          </div>
           <div class="form-check">
             <input class="form-check-input" type="checkbox" name="up" value="down" id="up">
             <label class="form-check-label" for="up">
@@ -63,6 +67,24 @@
             <input class="form-check-input" type="radio" name="emotion" id="sad" value="sad">
             <label class="form-check-label" for="sad">
               SAD
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="emotion" id="angry" value="angry">
+            <label class="form-check-label" for="angry">
+              ANGRY
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="emotion" id="shocked" value="shocked">
+            <label class="form-check-label" for="shocked">
+              SHOCKED
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="emotion" id="doubtful" value="doubtful">
+            <label class="form-check-label" for="doubtful">
+              DOUBTFUL
             </label>
           </div>
           <button type="submit" class="btn btn-primary">Send emotion</button>

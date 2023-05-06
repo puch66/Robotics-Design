@@ -1,6 +1,27 @@
 # Robotics-Design
 *This repository provides some architectures to manage the communication between our robot and the other ones (plus the god) and to implement the robot movements*
 
+# TODO
+
+## martedì
+- [ ] attacco collo-testa
+- [ ] vestito
+- [ ] implementare 1/2 emozioni
+- [ ] comunicazione client (2 cores) - server
+
+## 23/05
+- [ ] ristampare base
+- [ ] riempire base sotto
+- [ ] muovere sopracciglia
+- [ ] dipingere palpebre e occhi
+- [ ] muovere coda
+- [ ] implementare emozioni
+- [ ] macchina a stati per decidere a cosa reagire
+- [ ] mettere motorino 2 grande
+- [ ] mp3 per leggere messaggi
+- [ ] levigare bocca per scricchiolio
+
+
 ## Mock server to simulate the god
 ### Installation and run
  - download node.js and install on your laptop: [Node.s Windows download](https://nodejs.org/en/download)

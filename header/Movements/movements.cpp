@@ -4,27 +4,30 @@ Adafruit_PWMServoDriver controller = Adafruit_PWMServoDriver(0x40);
 
 bool done[16];
 movement s[16];
-int i;
+int i = 0;
 
 movement::movement() {
 
 }
 
-movement::movement(unsigned char servo){
+movement::movement(unsigned char servo, unsigned char delay_t0){
     motion_in_progress = false;
-    delay_t0 = 10;
+    this->delay_t0 = delay_t0;
     epsilon = 10;
-    iter = 0;
-    executed = false;
     this->servo = servo;
-    if(servo == 0) this->servo_pos = S0_CLOSE;
-    else if(servo == 1) this->servo_pos = S1_CLOSE;
-    else if(servo == 2) this->servo_pos = S2_MID;
-    else if(servo == 3) this->servo_pos = S3_MID;
-    else if(servo == 4) this->servo_pos = S4_CLOSE;
-    else if(servo == 5) this->servo_pos = S5_CLOSE;
-    else if(servo == 6) this->servo_pos = S6_CLOSE;
-    else if(servo == 7) this->servo_pos = S7_CLOSE;
+    if (servo == 0) this->servo_pos = S0_CLOSE;
+    else if (servo == 1) this->servo_pos = S1_CLOSE;
+    else if (servo == 2) this->servo_pos = S2_MID;
+    else if (servo == 3) this->servo_pos = S3_MID;
+    else if (servo == 4) this->servo_pos = S4_CLOSE;
+    else if (servo == 5) this->servo_pos = S5_CLOSE;
+    else if (servo == 6) this->servo_pos = S6_CLOSE;
+    else if (servo == 7) this->servo_pos = S7_CLOSE;
+    else if (servo == 8) this->servo_pos = S8_MID;
+    else if (servo == 9) this->servo_pos = S9_MID;
+    else if(servo == 10) this->servo_pos = S10_MID;
+    else if (servo == 11) this->servo_pos = S11_MID;
+    else this->servo_pos = 0;
   
     controller.setPWM(servo, 0, servo_pos);
 }
@@ -55,39 +58,7 @@ bool movement::new_position(Transition t){ // min = 0 max = 1
     }
 }
 
-bool movement::sequence_of_moves(Transition transitions[], int i) {
-    if(!executed && iter < i) {
-      executed = new_position(transitions[iter]);
-      return false;
-    }
-    else if(iter < i) {
-      iter++;
-      executed = !executed;
-      Serial.print("Transition ");
-      Serial.print(iter);
-      Serial.print(" completed, servo ");
-      Serial.print(servo);
-      Serial.print(" at pos: ");
-      Serial.println(servo_pos);
-      //delay(2000);
-      return false;
-    }
-    else {
-      iter = 0;
-      executed = false;
-      return true;
-    }
-}
-
 //GETTERS AND SETTERS
-bool movement::get_executed() {
-    return executed;
-}
-
-void movement::set_executed(bool executed) {
-    this->executed = executed;
-}
-
 float movement::get_servo_pos() {
     return servo_pos;
 }
@@ -96,47 +67,8 @@ void movement::set_servo_pos(float servo_pos) {
     this->servo_pos = servo_pos;
 }
 
-unsigned char movement::get_iter() {
-    return iter;
-}
-
-void movement::set_iter(unsigned char iter) {
-    this->iter = iter;
-}
-
 bool movement::get_mip(){
   return motion_in_progress;
-}
-
-bool blink() {
-  Transition t[5];
-  float v = 0.025;
-
-  //blink left eye
-  if(!done[0]) {
-    t[0] = {S0_OPEN, v}; t[1] = {S0_CLOSE, v}; t[2] = {S0_OPEN, v}; t[3] = {S0_CLOSE, v}; t[4] = {S0_OPEN, v};
-    done[0] = s[0].sequence_of_moves(t, 5);
-  } 
-  if(!done[1]) {
-    t[0] = {S1_OPEN, v}; t[1] = {S1_CLOSE, v}; t[2] = {S1_OPEN, v}; t[3] = {S1_CLOSE, v}; t[4] = {S1_OPEN, v};
-    done[1] = s[1].sequence_of_moves(t, 5);    
-  } 
-
-  //blink right eye
-  if(!done[4]) {
-    t[0] = {S4_OPEN, v}; t[1] = {S4_CLOSE, v}; t[2] = {S4_OPEN, v}; t[3] = {S4_CLOSE, v}; t[4] = {S4_OPEN, v};
-    done[4] = s[4].sequence_of_moves(t, 5);    
-  }
-  if(!done[5]) {
-    t[0] = {S5_OPEN, v}; t[1] = {S5_CLOSE, v}; t[2] = {S5_OPEN, v}; t[3] = {S5_CLOSE, v}; t[4] = {S5_OPEN, v};
-    done[5] = s[5].sequence_of_moves(t, 5);    
-  }
-
-  if(done[0] && done[1] && done[4] && done[5]) {
-    done[0] = false; done[1] = false; done[4] = false; done[5] = false;
-    return true;
-  }
-  else return false;
 }
 
 //m = 0 -> closed
@@ -187,8 +119,8 @@ bool set_mouth(int m, float v){
     if(!done[7]) done[7] = s[7].new_position({S7_CLOSE,v});
   }
   else if(m == 1) {
-    if(!done[6]) done[6] = s[6].new_position({130,v});
-    if(!done[7]) done[7] = s[7].new_position({170,v});
+    if(!done[6]) done[6] = s[6].new_position({S6_MID,v});
+    if(!done[7]) done[7] = s[7].new_position({S7_MID,v});
   }
   else if(m == 2) {
     if(!done[6]) done[6] = s[6].new_position({S6_OPEN,v});
@@ -200,6 +132,72 @@ bool set_mouth(int m, float v){
     return true;
   }
   else return false;
+}
+
+// m = 0 -> front
+// m = 1 -> mid position
+// m = 2 -> back
+bool set_chest(int m, float v) {
+    if (m == 0) {
+        if (!done[8]) done[8] = s[8].new_position({ S8_FRONT,v });
+        if (!done[9]) done[9] = s[9].new_position({ S9_FRONT,v });
+    }
+    else if (m == 1) {
+        if (!done[8]) done[8] = s[8].new_position({ S8_MID,v });
+        if (!done[9]) done[9] = s[9].new_position({ S9_MID,v });
+    }
+    else if (m == 2) {
+        if (!done[8]) done[8] = s[8].new_position({ S8_BACK,v });
+        if (!done[9]) done[9] = s[9].new_position({ S9_BACK,v });
+    }
+
+    if (done[8] && done[9]) {
+        done[8] = false; done[9] = false;
+        return true;
+    }
+    else return false;
+}
+
+// m = 0 -> left
+// m = 1 -> mid position
+// m = 2 -> right
+bool set_body_rotation(int m, float v) {
+    if (m == 0) {
+        if (!done[10]) done[10] = s[10].new_position({ S10_LEFT,v });
+    }
+    else if (m == 1) {
+        if (!done[10]) done[10] = s[10].new_position({ S10_MID,v });
+    }
+    else if (m == 2) {
+        if (!done[10]) done[10] = s[10].new_position({ S10_RIGHT,v });
+    }
+
+    if (done[10]) {
+        done[10] = false;
+        return true;
+    }
+    else return false;
+}
+
+// m = 0 -> up
+// m = 1 -> mid position
+// m = 2 -> down
+bool set_neck(int m, float v) {
+    if (m == 0) {
+        if (!done[11]) done[11] = s[11].new_position({ S11_UP,v });
+    }
+    else if (m == 1) {
+        if (!done[11]) done[11] = s[11].new_position({ S11_MID,v });
+    }
+    else if (m == 2) {
+        if (!done[11]) done[11] = s[11].new_position({ S11_DOWN,v });
+    }
+
+    if (done[11]) {
+        done[11] = false;
+        return true;
+    }
+    else return false;
 }
 
 bool do_happy() {
@@ -222,4 +220,44 @@ bool undo_happy() {
     return true;
   }
   else return false;
+}
+
+bool test() {
+    if (i == 0) if (set_chest(0, 0.015)) i++;
+    if (i == 1) if (set_chest(2, 0.015)) i++;
+    if (i == 2) if (set_chest(1, 0.015)) i++;
+    if (i == 3) if (set_body_rotation(0, 0.01)) i++;
+    if (i == 4) if (set_body_rotation(2, 0.01)) i++;
+    if (i == 5) if (set_body_rotation(1, 0.01)) i++;
+    if (i == 6) if (set_neck(0, 0.01)) i++;
+    if (i == 7) if (set_neck(2, 0.01)) i++;
+    if (i == 8) if (set_neck(1, 0.01)) i++;
+
+    //Serial.println(i);
+    Serial.println(done[10]);
+    if (i == 9) {
+        i = 0;
+        return true;
+    }
+    else return false;
+}
+
+bool test_synchro() {
+    if (i == 0) {
+        if (!done[14]) done[14] = set_chest(0, 0.02);
+        if (!done[15]) done[15] = set_neck(0, 0.02);
+
+        if (done[14] && done[15]) {
+            done[14] = false; done[15] = false;
+            i++;
+        }
+    }
+
+    //Serial.println(i);
+    if (i == 1) {
+        i = 0;
+        return true;
+    }
+    else return false;
+
 }

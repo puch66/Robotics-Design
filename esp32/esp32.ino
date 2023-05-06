@@ -1,8 +1,5 @@
-#include <WiFi.h>        // Include the Wi-Fi library
-#include <WebServer.h>
-#include <Adafruit_PWMServoDriver.h> // Include library to move motors
-#include <Wire.h>
 #include "movements.h"
+#include "wifi_setup.h"
 
 enum State {
   IDLE = 0,
@@ -10,23 +7,10 @@ enum State {
   SAD = 2,
   ANGRY = 3,
   SHOCKED = 4,
-  DOUBTUFUL = 5
+  DOUBTFUL = 5
 };
 
 State state = IDLE;
-bool blinking;
-
-//WiFi credentials
-const char* ssid     = "AndroidAPFD5D"; //"Vodafone-33573324";   //"TIM-22838165";   //"HUAWEI nova 5T";         // The SSID (name) of the Wi-Fi network you want to connect to
-const char* password = "valerioo";  //"f3545j5a52vxfht";       //"2rihtKdclmlITqJ82BfhZ9xk";         //"portanna";     // The password of the Wi-Fi network
-
-//set variables for client connection
-WiFiClient client;
-char* server_ip = "192.168.142.177";
-int server_port = 80;
-
-//Set web server port number to 80
-WebServer server(80);
 
 //messages and responses
 String message, response;
@@ -42,8 +26,8 @@ void setup() {
   delay(10);
   Serial.println('\n');
 
-  for(byte servo=0;servo<8;servo++){
-    s[servo] = movement(servo);
+  for(byte servo=0;servo<16;servo++){
+    s[servo] = movement(servo, delay_t0[servo]);
     done[servo] = false;
   }
   delay(100);
@@ -74,8 +58,6 @@ void setup() {
   //let the mock server know your ip  
   message = "/esp32?init=yes&esp32_ip=" + WiFi.localIP().toString();
   send_message(server_ip, server_port, message);
-
-  i = 0;
 }
 
 void loop() {
@@ -92,9 +74,17 @@ void loop() {
     response = "";
   }
 
-  if(state == HAPPY) if(undo_happy()) state = IDLE;
+  if(state == IDLE);
 
-  if(state == SAD) if(do_happy()) state = IDLE;
+  if(state == HAPPY) if(do_happy()) state = IDLE;
+
+  if(state == SAD) if(undo_happy()) state = IDLE;
+
+  if(state == ANGRY) if(test()) state = IDLE;
+
+  if(state == SHOCKED) if(test_synchro()) state = IDLE;
+
+  if(state == DOUBTFUL) if(undo_happy()) state = IDLE;  
 
 }
 
@@ -126,6 +116,8 @@ void handle_controller() {
   if( server.arg("servo") && server.arg("servo_pos")) {
     int servo = atoi(server.arg("servo").c_str());
     int up = 1;
+    int power = 0;
+    
     if(server.arg("down").equals("down")) {
       up*= -1;
     }
@@ -138,11 +130,24 @@ void handle_controller() {
     else if(server.arg("servo_pos").equals("high")) {
       s[servo].set_servo_pos(s[servo].get_servo_pos() + 50*up);
     }
+    else if(server.arg("power")) {
+      power = atoi(server.arg("power").c_str());
+      s[servo].set_servo_pos(s[servo].get_servo_pos() + power*up);
+    } 
   
     Serial.print("Moving servo number ");
     Serial.println(servo);
     Serial.print("to bit: ");
     Serial.println(s[servo].get_servo_pos());
+    
+    if(servo == 6 || servo == 8) {
+      s[servo+1].set_servo_pos(s[servo+1].get_servo_pos() - power*up);
+      controller.setPWM(servo+1, 0, s[servo+1].get_servo_pos());
+    }
+    else if(servo == 7 || servo == 9) {
+      s[servo-1].set_servo_pos(s[servo-1].get_servo_pos() - power*up);
+      controller.setPWM(servo-1, 0, s[servo-1].get_servo_pos());
+    }
     controller.setPWM(servo, 0, s[servo].get_servo_pos());
     delay(10);
     server.send(200, "text/html", "<p>Hello world!</p>");
@@ -151,13 +156,28 @@ void handle_controller() {
 
 void handle_emotion() {
   if(server.arg("emotion").equals("happy")) {
-    Serial.println("******START BLINKING*******");
+    Serial.println("******START HAPPY*******");
     state = HAPPY;
     server.send(200, "text/html", "<p>Hello world!</p>");
   }
   if(server.arg("emotion").equals("sad")) {
-    Serial.println("******START HAPPY*******");
+    Serial.println("******START SAD*******");
     state = SAD;
+    server.send(200, "text/html", "<p>Hello world!</p>");
+  }
+  if(server.arg("emotion").equals("angry")) {
+    Serial.println("******START ANGRY*******");
+    state = ANGRY;
+    server.send(200, "text/html", "<p>Hello world!</p>");
+  }
+    if(server.arg("emotion").equals("shocked")) {
+    Serial.println("******START SHOCKED*******");
+    state = SHOCKED;
+    server.send(200, "text/html", "<p>Hello world!</p>");
+  }
+    if(server.arg("emotion").equals("doubtful")) {
+    Serial.println("******START DOUBTFUL*******");
+    state = DOUBTFUL;
     server.send(200, "text/html", "<p>Hello world!</p>");
   }
 }

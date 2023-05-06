@@ -66,9 +66,10 @@ app.post('/control',function(req,res){
     var down = req.body.up ? req.body.up : "up";
     var servo = req.body.servo_channel;
     var speed = req.body.speed;
+    var power = req.body.power;
     //console.log(down, servo, speed);
     
-    var url = 'http://' + esp32_ip + ':' + esp32_port + '/controller?servo=' + servo + '&down=' + down + '&servo_pos=' + speed;
+    var url = 'http://' + esp32_ip + ':' + esp32_port + '/controller?servo=' + servo + '&down=' + down + '&servo_pos=' + speed + '&power=' + power;
     //console.log(url);
     request2server({
         url: url, 
