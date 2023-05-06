@@ -6,7 +6,7 @@
 ## martedì
 - [ ] attacco collo-testa
 - [ ] vestito
-- [ ] implementare 1/2 emozioni
+- [x] implementare 1/2 emozioni
 - [ ] comunicazione client (2 cores) - server
 
 ## 23/05

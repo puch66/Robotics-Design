@@ -2,15 +2,17 @@
 #include "wifi_setup.h"
 
 enum State {
-  IDLE = 0,
-  HAPPY = 1,
-  SAD = 2,
-  ANGRY = 3,
-  SHOCKED = 4,
-  DOUBTFUL = 5
+  RESET_POSITION = 0,
+  IDLE = 1,
+  HAPPY = 2,
+  SAD = 3,
+  ANGRY = 4,
+  SHOCKED = 5,
+  DOUBTFUL = 6
 };
 
 State state = IDLE;
+State next_state = IDLE;
 
 //messages and responses
 String message, response;
@@ -74,17 +76,24 @@ void loop() {
     response = "";
   }
 
-  if(state == IDLE);
+  if(state == RESET_POSITION) {
+    if(reset_position()) {
+      state = next_state;
+      next_state =  IDLE;
+    }
+  }
 
-  if(state == HAPPY) if(do_happy()) state = IDLE;
+  if(state == IDLE) if(do_idle()) state = RESET_POSITION;
 
-  if(state == SAD) if(undo_happy()) state = IDLE;
+  if(state == HAPPY) if(do_happy()) state = RESET_POSITION;
 
-  if(state == ANGRY) if(test()) state = IDLE;
+  if(state == SAD) if(do_sad()) state = RESET_POSITION;
 
-  if(state == SHOCKED) if(test_synchro()) state = IDLE;
+  if(state == ANGRY) if(test()) state = RESET_POSITION;
 
-  if(state == DOUBTFUL) if(undo_happy()) state = IDLE;  
+  if(state == SHOCKED) if(test_synchro()) state = RESET_POSITION;
+
+  if(state == DOUBTFUL) if(undo_happy()) state = RESET_POSITION;  
 
 }
 
@@ -155,33 +164,35 @@ void handle_controller() {
 }
 
 void handle_emotion() {
+  if(server.arg("emotion").equals("idle")) {
+    Serial.println("******START IDLE*******");
+    next_state = IDLE;
+    server.send(200, "text/html", "<p>Hello world!</p>");
+  }
   if(server.arg("emotion").equals("happy")) {
     Serial.println("******START HAPPY*******");
-    state = HAPPY;
+    next_state = HAPPY;
     server.send(200, "text/html", "<p>Hello world!</p>");
   }
   if(server.arg("emotion").equals("sad")) {
     Serial.println("******START SAD*******");
-    state = SAD;
+    next_state = SAD;
     server.send(200, "text/html", "<p>Hello world!</p>");
   }
   if(server.arg("emotion").equals("angry")) {
     Serial.println("******START ANGRY*******");
-    state = ANGRY;
+    next_state = ANGRY;
     server.send(200, "text/html", "<p>Hello world!</p>");
   }
     if(server.arg("emotion").equals("shocked")) {
     Serial.println("******START SHOCKED*******");
-    state = SHOCKED;
+    next_state = SHOCKED;
     server.send(200, "text/html", "<p>Hello world!</p>");
   }
     if(server.arg("emotion").equals("doubtful")) {
     Serial.println("******START DOUBTFUL*******");
-    state = DOUBTFUL;
+    next_state = DOUBTFUL;
     server.send(200, "text/html", "<p>Hello world!</p>");
   }
 }
-
-
-
 
