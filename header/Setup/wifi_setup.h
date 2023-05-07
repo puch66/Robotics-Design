@@ -19,7 +19,7 @@ int god_port = 1234;
 //Set web server port number to 80
 WebServer server(80);
 
-String message;
+String message, response;
 
 void setup_connection() {
     WiFi.begin(ssid, password);             // Connect to the network

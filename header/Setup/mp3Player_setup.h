@@ -21,14 +21,7 @@
 #include <HardwareSerial.h>
 
 HardwareSerial mySoftwareSerial(1);
-
 DFRobotDFPlayerMini myDFPlayer;
-
-void play_song(int number){
-	if (myDFPlayer.available()) {
-		myDFPlayer.playFolder(2, number);
-	}
-}
 
 void setup_mp3() {
 	mySoftwareSerial.begin(9600, SERIAL_8N1, 17, 16);  // speed, type, TX, RX
@@ -42,5 +35,16 @@ void setup_mp3() {
 	myDFPlayer.EQ(DFPLAYER_EQ_NORMAL);
 	myDFPlayer.outputDevice(DFPLAYER_DEVICE_SD);
 	delay(100);
+}
+
+bool play_song(int number) {
+	myDFPlayer.playFolder(2, number);
+	if (myDFPlayer.available()) {
+		uint8_t type = myDFPlayer.readType();
+		if (type == DFPlayerPlayFinished) {
+			return true;
+		}
+	}
+	return false;
 }
 #endif

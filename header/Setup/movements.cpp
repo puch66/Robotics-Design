@@ -328,14 +328,20 @@ bool reset_position() {
 }
 
 bool do_idle() {
-    return true;
+    if (i == 0) if (set_body_rotation(1)) i++;
+    if (i == 1) {
+        i = 0;
+        return true;
+    }
+    else return false;
 }
 
 bool do_happy() {
-  if(i == 0) if(set_eyelids(2, 0.02)) i++;
-  if(i == 1) if(set_mouth(2, 0.02)) i++;
+  if(i == 0) if (set_body_rotation(1)) i++;
+  if(i == 1) if(set_eyelids(2, 0.02)) i++;
+  if(i == 2) if(set_mouth(2, 0.02)) i++;
   //Serial.println(i);
-  if(i == 2) {
+  if(i == 3) {
     i = 0;
     return true;
   }
@@ -343,10 +349,11 @@ bool do_happy() {
 }
 
 bool do_sad() {
-    if (i == 0) {
+    if (i == 0) if(set_body_rotation(1)) i++;
+    if (i == 1) {
         if (set_eyelids(1)) i++;
     }
-    if (i == 1) {
+    if (i == 2) {
         if (!done[0]) done[0] = set_eyelids(4);
         if (!done[1]) done[1] = roll_eyes(2);
         if (!done[2]) done[2] = set_chest(3);
@@ -356,7 +363,7 @@ bool do_sad() {
             i++;
         }
     }
-    if (i == 2) {
+    if (i == 3) {
         if (!done[0]) done[0] = set_eyelids(5);
         if (!done[1]) done[1] = roll_eyes(1);
         if (done[0] && done[1]) {
@@ -364,7 +371,7 @@ bool do_sad() {
             i++;
         }
     }
-    if (i == 3) {
+    if (i == 4) {
         if (!done[0]) done[0] = set_eyelids(4);
         if (!done[1]) done[1] = roll_eyes(2);
         if (done[0] && done[1]) {
@@ -372,7 +379,7 @@ bool do_sad() {
             i++;
         }
     }
-    if (i == 4) {
+    if (i == 5) {
         if (!done[0]) done[0] = set_eyelids(5);
         if (!done[1]) done[1] = roll_eyes(1);
         if (done[0] && done[1]) {
@@ -380,7 +387,7 @@ bool do_sad() {
             i++;
         }
     }
-    if (i == 5) {
+    if (i == 6) {
         if (!done[0]) done[0] = set_eyelids(4);
         if (!done[1]) done[1] = roll_eyes(2);
         if (done[0] && done[1]) {
@@ -389,7 +396,7 @@ bool do_sad() {
         }
     }
 
-    if (i == 6) {
+    if (i == 7) {
         i = 0;
         return true;
     }
@@ -397,15 +404,30 @@ bool do_sad() {
 }
 
 bool do_angry() {
-    return true;
+    if (i == 0) if (set_body_rotation(1)) i++;
+    if (i == 1) {
+        i = 0;
+        return true;
+    }
+    else return false;
 }
 
 bool do_shocked() {
-    return true;
+    if (i == 0) if (set_body_rotation(1)) i++;
+    if (i == 1) {
+        i = 0;
+        return true;
+    }
+    else return false;
 }
 
 bool do_doubtful() {
-    return true;
+    if (i == 0) if (set_body_rotation(1)) i++;
+    if (i == 1) {
+        i = 0;
+        return true;
+    }
+    else return false;
 }
 
 
