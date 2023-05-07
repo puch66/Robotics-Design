@@ -63,6 +63,23 @@ void movement::new_position(Transition t){ // min = 0 max = 1
     }
 }
 
+bool movement::wait(long int delay_t0) {
+    if (!motion_in_progress) {
+        t0 = millis();
+        motion_in_progress = true;
+        return false;
+    }
+    else {
+        if (millis() - t0 < 0) t0 = millis();
+        if (millis() - t0 > delay_t0) {
+            motion_in_progress = false;
+            return true;
+        }
+        else return false;
+    }
+    return false;
+}
+
 //GETTERS AND SETTERS
 float movement::get_servo_pos() {
     return servo_pos;
@@ -82,6 +99,21 @@ bool movement::get_done() {
 
 void movement::set_done(bool done) {
     this->done = done;
+}
+
+void setup_servos() {
+    Wire.begin(I2C_SDA, I2C_SCL);
+    controller.begin();
+    controller.setOscillatorFrequency(27000000);
+    controller.setPWMFreq(SERVO_FREQ);  // Analog servos run at ~50 Hz updates
+    delay(10);
+    Serial.println('\n');
+
+    for (byte servo = 0; servo < 16; servo++) {
+        s[servo] = movement(servo, delay_t0[servo]);
+        done[servo] = false;
+    }
+    delay(100);
 }
 
 //m = 0 -> closed

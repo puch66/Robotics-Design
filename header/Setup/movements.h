@@ -45,6 +45,7 @@ public:
   movement();
   movement(unsigned char servo, unsigned char delay_t0);
   void new_position(Transition t);
+  bool wait(long int delay_t0);
 
   //GETTERS AND SETTERS
   float get_servo_pos();
@@ -57,6 +58,8 @@ public:
 extern bool done[16];
 extern movement s[16];
 extern int i;
+
+void setup_servos();
 
 bool set_eyelids(int m, float v);
 bool set_mouth(int m, float v);

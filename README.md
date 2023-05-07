@@ -7,7 +7,7 @@
 - [ ] attacco collo-testa
 - [ ] vestito
 - [x] implementare 1/2 emozioni
-- [ ] comunicazione client (2 cores) - server
+- [x] comunicazione client (2 cores) - server
 
 ## 23/05
 - [ ] ristampare base

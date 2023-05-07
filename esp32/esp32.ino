@@ -1,5 +1,6 @@
 #include "movements.h"
 #include "wifi_setup.h"
+#include "mp3Player_setup.h"
 
 enum State {
   RESET_POSITION = 0,
@@ -15,7 +16,7 @@ State state = IDLE;
 State next_state = IDLE;
 
 //messages and responses
-String message, response;
+String response;
 bool writing = false;
 
 void setup() {
@@ -60,7 +61,20 @@ void setup() {
   //let the mock server know your ip  
   message = "/esp32?init=yes&esp32_ip=" + WiFi.localIP().toString();
   send_message(server_ip, server_port, message);
+
+  //setup mp3 player
+  mySoftwareSerial.begin(9600, SERIAL_8N1, 17, 16);  // speed, type, TX, RX
+
+  while(!myDFPlayer.begin(mySoftwareSerial)) {
+		Serial.println("Unable to begin DFPlayer");
+	}
+	Serial.println("DFPlayer Mini online.");
+
+	myDFPlayer.volume(10);
+	myDFPlayer.EQ(DFPLAYER_EQ_NORMAL);
+	myDFPlayer.outputDevice(DFPLAYER_DEVICE_SD);
 }
+
 
 void loop() {
   server.handleClient();
@@ -93,7 +107,9 @@ void loop() {
 
   if(state == SHOCKED) if(test_synchro()) state = RESET_POSITION;
 
-  if(state == DOUBTFUL) if(undo_happy()) state = RESET_POSITION;  
+  if(state == DOUBTFUL) if(undo_happy()) state = RESET_POSITION; 
+
+  play_song(1); 
 
 }
 
@@ -108,16 +124,6 @@ void handle_root() {
     //connect esp32 as client to the main server  
     message = "/esp32?esp32_ip=" + WiFi.localIP().toString();
     send_message(server_ip, server_port, message);
-  }
-}
-
-void send_message(char* ip, int port, String message) {
-  if (client.connect(ip, port)) {
-    Serial.println("connected to " + (String) ip);
-    client.println("GET " + message + " HTTP/1.0");
-    client.println();
-  } else {
-    Serial.println("Some error occurred :(");
   }
 }
 
