@@ -22,6 +22,12 @@ const int S11_DOWN = 190, S11_UP = 390, S11_MID = 300,		S11_SAD = 270;
 
 const char delay_t0[16] = {30, 30, 30, 30, 30, 30, 30, 30, 60, 60, 30, 30, 30, 30, 30, 30};
 
+enum Characters {
+  ALL = '0',              ROCCO = '1',        EVA = '2',
+  LELE = '3',             CARLOTTA = '4',     PEPPE = '5',
+  BIANCA = '6',           COSIMO = '7'
+};
+
 extern Adafruit_PWMServoDriver controller;
 
 struct Transition {
@@ -72,11 +78,11 @@ bool move_eyes(int m, float v);
 //state functions
 bool reset_position();
 bool do_idle();
-bool do_happy();
-bool do_sad();
-bool do_angry();
-bool do_shocked();
-bool do_doubtful();
+bool do_happy(Characters character);
+bool do_sad(Characters character);
+bool do_angry(Characters character);
+bool do_shocked(Characters character);
+bool do_doubtful(Characters character);
 
 //test functions
 bool undo_happy();

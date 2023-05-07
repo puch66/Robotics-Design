@@ -242,6 +242,30 @@ bool set_body_rotation(int m, float v = 0.01) {
     else return false;
 }
 
+bool set_who_see(Character character,float v = 0.01){
+    if(c == ROCCO){
+        s[10].new_position({ S10_MID,v });
+    }
+    else if(c == EVA){
+        s[10].new_position({ S10_MID,v });
+    }
+    else if(c == LELE){
+        s[10].new_position({ S10_MID,v });
+    }
+    else if(c == CARLOTTA){
+        s[10].new_position({ S10_MID,v });
+    }
+    else if(c == PEPPE){
+        s[10].new_position({ S10_MID,v });
+    }
+    else if(c== BIANCA){
+        s[10].new_position({ S10_MID,v });
+    }
+    else if(c == COSIMO){
+
+    }
+}
+
 // m = 0 -> up
 // m = 1 -> mid position
 // m = 2 -> down
@@ -336,20 +360,20 @@ bool do_idle() {
     else return false;
 }
 
-bool do_happy() {
-  if(i == 0) if (set_body_rotation(1)) i++;
-  if(i == 1) if(set_eyelids(2, 0.02)) i++;
-  if(i == 2) if(set_mouth(2, 0.02)) i++;
-  //Serial.println(i);
-  if(i == 3) {
-    i = 0;
-    return true;
-  }
-  else return false;  
+bool do_happy(Characters character) {
+    if(i == 0) if (set_who_see(character))) i++;
+     f(i == 1) if(set_eyelids(2, 0.02)) i++;
+    if(i == 2) if(set_mouth(2, 0.02)) i++;
+    //Serial.println(i);
+    if(i == 3) {
+        i = 0;
+        return true;
+    }
+    else return false;  
 }
 
-bool do_sad() {
-    if (i == 0) if(set_body_rotation(1)) i++;
+bool do_sad(Characters character) {
+    if (i == 0) if(set_who_see(character)) i++;
     if (i == 1) {
         if (set_eyelids(1)) i++;
     }
@@ -403,8 +427,8 @@ bool do_sad() {
     else return false;
 }
 
-bool do_angry() {
-    if (i == 0) if (set_body_rotation(1)) i++;
+bool do_angry(Characters character) {
+    if (i == 0) if (set_who_see(character)) i++;
     if (i == 1) {
         i = 0;
         return true;
@@ -412,8 +436,8 @@ bool do_angry() {
     else return false;
 }
 
-bool do_shocked() {
-    if (i == 0) if (set_body_rotation(1)) i++;
+bool do_shocked(Characters character) {
+    if (i == 0) if (set_who_see(character)) i++;
     if (i == 1) {
         i = 0;
         return true;
@@ -421,8 +445,8 @@ bool do_shocked() {
     else return false;
 }
 
-bool do_doubtful() {
-    if (i == 0) if (set_body_rotation(1)) i++;
+bool do_doubtful(Characters character) {
+    if (i == 0) if (set_who_see(character)) i++;
     if (i == 1) {
         i = 0;
         return true;
