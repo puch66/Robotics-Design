@@ -242,28 +242,24 @@ bool set_body_rotation(int m, float v = 0.01) {
     else return false;
 }
 
-bool set_who_see(Character character,float v = 0.01){
-    if(c == ROCCO){
-        s[10].new_position({ S10_MID,v });
+bool set_body_rotation(int m, float v = 0.01,Characters character);
+    int index = (char)character -'0';
+    int S10_bit_pos = 0;
+    if(m == 0){
+        S10_bit_pos = character_pos_LEFT[index];
     }
-    else if(c == EVA){
-        s[10].new_position({ S10_MID,v });
+    else if(m == 1){
+        S10_bit_pos = character_pos_MID[index];
     }
-    else if(c == LELE){
-        s[10].new_position({ S10_MID,v });
+    else if(m == 2){
+        S10_bit_pos = character_pos_LEFT[index];
     }
-    else if(c == CARLOTTA){
-        s[10].new_position({ S10_MID,v });
+    s[10].new_position({ S10_bit_pos,v });
+    if (s[10].get_done()) {
+        s[10].set_done(false);
+        return true;
     }
-    else if(c == PEPPE){
-        s[10].new_position({ S10_MID,v });
-    }
-    else if(c== BIANCA){
-        s[10].new_position({ S10_MID,v });
-    }
-    else if(c == COSIMO){
-
-    }
+    else return false;
 }
 
 // m = 0 -> up

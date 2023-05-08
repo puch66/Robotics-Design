@@ -27,6 +27,9 @@ enum Characters {
   LELE = '3',             CARLOTTA = '4',     PEPPE = '5',
   BIANCA = '6',           COSIMO = '7'
 };
+int character_pos_LEFT = [];
+int character_pos_MID = [];
+int character_pos_RIGHT = [];
 
 extern Adafruit_PWMServoDriver controller;
 
@@ -71,6 +74,7 @@ bool set_eyelids(int m, float v);
 bool set_mouth(int m, float v);
 bool set_chest(int m, float v);
 bool set_body_rotation(int m, float v);
+bool set_body_rotation(int m, float v,Characters character);
 bool set_neck(int m, float v);
 bool roll_eyes(int m, float v);
 bool move_eyes(int m, float v);
