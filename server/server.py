@@ -1,7 +1,7 @@
 import socket
 import threading
 
-HOST = '192.168.94.177'  # server host
+HOST = '192.168.206.177'  # server host
 PORT = 1234  # server port
 
 # create a TCP/IP socket
