@@ -18,18 +18,27 @@ const int S7_OPEN=130,		S7_CLOSE=200,		S7_MID=170;
 const int S8_BACK = 230, S8_FRONT = 320, S8_MID = 280, S8_SAD = 290;
 const int S9_BACK = 340, S9_FRONT = 260, S9_MID = 300, S9_SAD = 310;
 const int S10_LEFT = 480, S10_RIGHT = 110, S10_MID = 305;
-const int S11_DOWN = 190, S11_UP = 390, S11_MID = 300,		S11_SAD = 270;
+const int S11_DOWN = 190, S11_UP = 390, S11_MID = 320,		S11_SAD = 270;
+									
+const int character_pos_LEFT[8] =  {320, 275, 230, 365, 480, 453, 410, 365};
+const int character_pos_MID[8] =   {260, 215, 166, 305, 439, 395, 350 ,305};
+const int character_pos_RIGHT[8] = {200, 148, 100, 246, 380, 335, 290, 246};
 
-const char delay_t0[16] = {30, 30, 30, 30, 30, 30, 30, 30, 60, 60, 30, 30, 30, 30, 30, 30};
+const char delay_t0[16] = { 30, 30, 30, 30, 30, 30, 30, 30, 60, 60, 30, 30, 30, 30, 30, 30 };
+
+enum State {
+	RESET_POSITION = 0, IDLE = 'A', HAPPY = 'B',
+	ANGRY = 'C', SHOCKED = 'D', SAD = 'E',
+	RELAXED = 'F', AFRAID = 'G', DOUBTFUL = 'H',
+	SURPRISED = 'I', ANNOYED = 'J', EMBARASSED = 'K',
+	ANXIOUS = 'L', READING_MESSAGE = 1, LISTENING_MESSAGE = 2, WAIT = 3
+};
 
 enum Characters {
-  ALL = '0',              ROCCO = '1',        EVA = '2',
-  LELE = '3',             CARLOTTA = '4',     PEPPE = '5',
-  BIANCA = '6',           COSIMO = '7'
+	ALL = '0', ROCCO = '1', EVA = '2',
+	LELE = '3', CARLOTTA = '4', PEPPE = '5',
+	BIANCA = '6', COSIMO = '7'
 };
-int character_pos_LEFT = [];
-int character_pos_MID = [];
-int character_pos_RIGHT = [];
 
 extern Adafruit_PWMServoDriver controller;
 
@@ -74,19 +83,19 @@ bool set_eyelids(int m, float v);
 bool set_mouth(int m, float v);
 bool set_chest(int m, float v);
 bool set_body_rotation(int m, float v);
-bool set_body_rotation(int m, float v,Characters character);
+bool set_body_rotation(int m, float v, Characters c);
 bool set_neck(int m, float v);
 bool roll_eyes(int m, float v);
 bool move_eyes(int m, float v);
 
 //state functions
 bool reset_position();
-bool do_idle();
-bool do_happy(Characters character);
-bool do_sad(Characters character);
-bool do_angry(Characters character);
-bool do_shocked(Characters character);
-bool do_doubtful(Characters character);
+bool do_idle(Characters c = LELE);
+bool do_happy(Characters c = LELE);
+bool do_sad(Characters c = LELE);
+bool do_angry(Characters c = LELE);
+bool do_shocked(Characters c = LELE);
+bool do_doubtful(Characters c = LELE);
 
 //test functions
 bool undo_happy();

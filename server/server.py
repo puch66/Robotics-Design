@@ -2,7 +2,7 @@ import socket
 import threading
 
 HOST = '192.168.206.177'  # server host
-PORT = 1234  # server port
+PORT = 800  # server port
 
 # create a TCP/IP socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

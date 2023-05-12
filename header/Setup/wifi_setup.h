@@ -12,14 +12,27 @@ const char* password = "valerioo";  //"f3545j5a52vxfht";       //"2rihtKdclmlITq
 
 //set variables for server connection
 WiFiClient client;
-char* server_ip = "192.168.94.177";
+char* server_ip = "192.168.206.177";
+char* god_ip = "192.168.206.177";
 int server_port = 80;
-int god_port = 1234;
+int god_port = 800;
 
 //Set web server port number to 80
 WebServer server(80);
 
-String message, response;
+String message = "3A00", response;
+
+void connect_to_god() {
+    // Server connection
+    Serial.println();
+    Serial.println("Connecting to Server...");
+    while (!client.connect(god_ip, god_port)) {
+        delay(1000);
+        //Serial.print(".");
+    }
+    Serial.println("Server connected");
+    Serial.println();
+}
 
 void setup_connection() {
     WiFi.begin(ssid, password);             // Connect to the network
@@ -36,16 +49,7 @@ void setup_connection() {
     Serial.print("IP address:\t");
     Serial.println(WiFi.localIP());         // Send the IP address of the ESP32 to the computer
 
-    // Server connection
-    Serial.println();
-    Serial.println("Connecting to Server...");
-    while (!client.connect(server_ip, god_port)) {
-        delay(1000);
-        //Serial.print(".");
-    }
-    Serial.println("Server connected");
-    Serial.println();
-    
+    connect_to_god();
 }
 
 void send_message(char* ip, int port, String message) {

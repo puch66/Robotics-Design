@@ -4,22 +4,22 @@
 # TODO
 
 ## martedì
-- [ ] attacco collo-testa
-- [ ] vestito
+- [x] attacco collo-testa
 - [x] implementare 1/2 emozioni
 - [x] comunicazione client (2 cores) - server
 
 ## 23/05
-- [ ] ristampare base
+- [ ] comprare polipropilene al brico
+- [ ] vestito -> camicia bambino
+- [ ] ristampare base -> con guida per coda
 - [ ] riempire base sotto
-- [ ] muovere sopracciglia
-- [ ] dipingere palpebre e occhi
+- [ ] muovere sopracciglia (?)
+- [ ] dipingere palpebre e occhi e coda
 - [ ] muovere coda
 - [ ] implementare emozioni
 - [ ] macchina a stati per decidere a cosa reagire
-- [ ] mettere motorino 2 grande
 - [ ] mp3 per leggere messaggi
-- [ ] levigare bocca per scricchiolio
+- [ ] mettere gommini per far stare in piedi il robot
 
 
 ## Mock server to simulate the god
