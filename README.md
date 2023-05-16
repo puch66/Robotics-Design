@@ -9,17 +9,18 @@
 - [x] comunicazione client (2 cores) - server
 
 ## 23/05
-- [ ] comprare polipropilene al brico
-- [ ] vestito -> camicia bambino
+- [x] comprare polipropilene al brico
+- [x] vestito -> camicia bambino
 - [ ] ristampare base -> con guida per coda
-- [ ] riempire base sotto
+- [ ] riempire base sotto (?)
 - [ ] muovere sopracciglia (?)
 - [ ] dipingere palpebre e occhi e coda
 - [ ] muovere coda
-- [ ] implementare emozioni
+- [ ] implementare emozioni: 3/6
 - [ ] macchina a stati per decidere a cosa reagire
-- [ ] mp3 per leggere messaggi
+- [x] mp3 per leggere messaggi
 - [ ] mettere gommini per far stare in piedi il robot
+- [ ] decidere messaggi da leggere
 
 
 ## Mock server to simulate the god

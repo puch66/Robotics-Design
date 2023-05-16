@@ -30,7 +30,7 @@ void setup() {
   delay(100);
 
   //setup mp3 player
-  //setup_mp3();
+  setup_mp3();
 
   //setup dual core tasks
   xTaskCreatePinnedToCore(main_loop, "main", 10000, NULL, 1, &Task1, 0);                 
@@ -41,6 +41,8 @@ void setup() {
 
   //set seed for random number generation
   randomSeed(analogRead(0));
+
+  //myDFPlayer.play(1);
 }
 
 void main_loop(void * pvParameters) {
@@ -52,7 +54,7 @@ void main_loop(void * pvParameters) {
         towards = next_towards;
         next_state =  IDLE;
         next_towards = ALL;
-        if(state!=IDLE && state!=READING_MESSAGE) send_emotion();
+        if(state!=IDLE && state!=READING_MESSAGE && state != LISTENING_MESSAGE) send_emotion();
       }
     }
 
@@ -62,18 +64,19 @@ void main_loop(void * pvParameters) {
 
     if(state == SAD) if(do_sad(towards)) state = RESET_POSITION;
 
-    if(state == ANGRY) if(test()) state = RESET_POSITION;
+    if(state == ANGRY) if(do_angry(towards)) state = RESET_POSITION;
 
     if(state == SHOCKED) if(do_shocked(towards)) state = RESET_POSITION;
 
-    if(state == DOUBTFUL) if(test_synchro()) state = RESET_POSITION; 
+    if(state == DOUBTFUL) if(do_doubtful(towards)) state = RESET_POSITION; 
 
     if(state == READING_MESSAGE) {
-      int num = (message[1] < 58) ? message[1] - '0' : message[1] - 55; 
-      //if(play_song(num)) {
+      //num variable is 1 if G5 is sent from god, 2 if G6 is sent
+      int num = ((message[1] < 58) ? message[1] - '0' : message[1] - 55) -4;
+      if(play_song(num)) {
         //TODO: implement logic when after reading a god message arriving to you
         randNumber = random(100);
-        if(randNumber < 50) {
+        if(randNumber < 85) {
           state= RESET_POSITION;
           next_state = SAD;
           next_towards = LELE;
@@ -85,14 +88,14 @@ void main_loop(void * pvParameters) {
           next_towards = LELE;
           Serial.println("******START SHOCKED*******");
         }  
-      //}
+      }
     }
 
     if(state == LISTENING_MESSAGE) {
       int num = (message[1] < 58) ? message[1] - '0' : message[1] - 55;
       num = num%2 == 0 ? num/2 : (num+1)/2;
       //Serial.println(num);
-      if(set_body_rotation(1,0.02 , (Characters)(num+'0'))) state = WAIT; 
+      if(set_body_rotation(1,0.2 , (Characters)(num+'0'))) state = WAIT; 
     }
 
     if(state == WAIT) {
@@ -102,8 +105,6 @@ void main_loop(void * pvParameters) {
         next_towards = LELE;
       }
     }
-
-    //play_song(1); 
 
     delay(10);  
   }
@@ -146,15 +147,22 @@ void network_loop(void * pvParameters) {
       
       //message sent by god
       if(message.length() == 2 && message[0] == 'G') {
-        int num = (message[1] < 58) ? message[1] - '0' : message[1] - 55; 
-        if((num%2!=0 && (num+1)/2 == (char)LELE - '0') || (num%2==0 && num/2 == (char)LELE - '0')) {
+        hard_reset();
+        int num = (message[1] < 58) ? message[1] - '0' : message[1] - 55;
+        if(message[1] == 'F') {
+          //GF signal from god means return to idle
+          state = RESET_POSITION;
+          next_state = IDLE;
+        }
+        else if((num%2!=0 && (num+1)/2 == (char)LELE - '0') || (num%2==0 && num/2 == (char)LELE - '0')) {
           //if it's a message directed to us, read it out loud
+          state = RESET_POSITION;
           next_state = READING_MESSAGE;
         }
         else {
           //turn towards who is speaking
+          state = RESET_POSITION;
           next_state = LISTENING_MESSAGE;
-          //next_towards = compute_receiver(message);
         }              
       }
 
@@ -303,4 +311,16 @@ void send_emotion() {
 
     //Send message WHEN EMOTION IS STARTING
     client.print(response);
+}
+
+void hard_reset() {
+  for(int i=0; i<16; i++) {
+    s[i].set_done(false);
+    s[i].set_mip(false);
+    done[i] = false;    
+  }
+  i = 0;
+  repeat_actions = 0;
+  init_song = false;
+  myDFPlayer.pause();  //pause the mp3
 }
