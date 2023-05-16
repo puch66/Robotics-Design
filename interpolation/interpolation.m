@@ -3,8 +3,8 @@
 % bit_pos = func(angular_pos)
 % angular_pos = array of angular postion
 % bit_pos = array of bit position (corresponding position in bit)
-angular_pos = [-90,0,+90]';
-bit_pos = [110,305,480]';
+angular_pos = [-90,-45,0,+45,+90]';
+bit_pos = [110,215,305,395,480]';
 [n,m]= size(angular_pos);
 A = zeros(n,n);
 for i = 1:1:n
