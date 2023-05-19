@@ -229,11 +229,11 @@ void handle_controller() {
         Serial.print("to bit: ");
         Serial.println(s[servo].get_servo_pos());
 
-        if (servo == 6 || servo == 8) {
+        if (servo == 6 /*|| servo == 8*/) {
             s[servo + 1].set_servo_pos(s[servo + 1].get_servo_pos() - power * up);
             controller.setPWM(servo + 1, 0, s[servo + 1].get_servo_pos());
         }
-        else if (servo == 7 || servo == 9) {
+        else if (servo == 7 /*|| servo == 9*/) {
             s[servo - 1].set_servo_pos(s[servo - 1].get_servo_pos() - power * up);
             controller.setPWM(servo - 1, 0, s[servo - 1].get_servo_pos());
         }
@@ -277,7 +277,7 @@ void handle_emotion() {
     if (server.arg("emotion").equals("doubtful")) {
         Serial.println("******START DOUBTFUL*******");
         next_state = DOUBTFUL;
-        next_towards = LELE;
+        next_towards = BIANCA;
         server.send(200, "text/html", "<p>Hello world!</p>");
     }
 }
