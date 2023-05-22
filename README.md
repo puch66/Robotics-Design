@@ -11,16 +11,17 @@
 ## 23/05
 - [x] comprare polipropilene al brico
 - [x] vestito -> camicia bambino
-- [ ] ristampare base -> con guida per coda
+- [x] ristampare base -> con guida per coda
 - [ ] riempire base sotto (?)
 - [ ] muovere sopracciglia (?)
-- [ ] dipingere palpebre e occhi e coda
-- [ ] muovere coda
+- [x] dipingere palpebre e occhi e coda
+- [x] muovere coda
 - [ ] implementare emozioni: 3/6
 - [ ] macchina a stati per decidere a cosa reagire
 - [x] mp3 per leggere messaggi
+- [ ] decidere versi da fare
 - [ ] mettere gommini per far stare in piedi il robot
-- [ ] decidere messaggi da leggere
+- [x] decidere messaggi da leggere
 
 
 ## Mock server to simulate the god

@@ -14,22 +14,22 @@ const int S3_RIGHT=100,		S3_LEFT=270,		S3_MID=180;
 const int S4_CLOSE=100,		S4_OPEN=340, S4_ANGRY = 200; 
 const int S5_OPEN=100,		S5_CLOSE=410, S5_ANGRY = 380; 
 const int S6_CLOSE=100,		S6_OPEN=170,		S6_MID=130, S6_ANGRY = 110; 
-const int S7_OPEN=130,		S7_CLOSE=200,		S7_MID=170, S7_ANGRY = 190;
-const int S8_BACK = 230, S8_FRONT = 320, S8_MID = 280, S8_SAD = 290, S8_ANGRY = 290, S8_DOUBTFUL = 300;
+const int S7_OPEN=128,		S7_CLOSE=198,		S7_MID=168, S7_ANGRY = 188;
+const int S8_BACK = 230, S8_FRONT = 320, S8_MID = 280, S8_SAD = 290, S8_ANGRY = 290, S8_DOUBTFUL = 300, S8_HAPPY = 260;
 const int S9_OPEN = 100, S9_CLOSE = 330, S9_SMALL_OPEN = 200, S9_SMALL_CLOSE = 270;
-const int S10_LEFT = 480, S10_RIGHT = 110, S10_MID = 305;
-const int S11_DOWN = 190, S11_UP = 390, S11_MID = 320,	S11_SAD = 270,	S11_ANGRY = 330;
+const int S10_LEFT = 480, S10_RIGHT = 110, S10_MID = 305, S10_IDLE_LEFT = 365, S10_IDLE_RIGHT = 246, S10_DOUBTFUL_LEFT = 410, S10_DOUBTFUL_RIGHT = 200;
+const int S11_DOWN = 190, S11_UP = 390, S11_MID = 320,	S11_SAD = 290,	S11_ANGRY = 330, S11_HAPPY = 340;
 									
-const int character_pos_LEFT[8] =  {320, 275, 230, 365, 480, 453, 410, 365};
-const int character_pos_MID[8] =   {260, 215, 166, 305, 439, 395, 350 ,305};
-const int character_pos_RIGHT[8] = {200, 148, 100, 246, 380, 335, 290, 246};
+const int character_pos_LEFT[8] =  {331, 253, 219, 365, 480, 474, 443, 409};
+const int character_pos_MID[8] =   {272, 191, 153, 305, 450, 417, 384 ,349};
+const int character_pos_RIGHT[8] = {211, 120, 100, 246, 391, 357, 324, 290};
 
 const char delay_t0[16] = { 30, 30, 30, 30, 30, 30, 30, 30, 60, 60, 30, 30, 30, 30, 30, 30 };
 
 enum State {
 	RESET_POSITION = 0, IDLE = 'A', HAPPY = 'B',
 	ANGRY = 'C', SHOCKED = 'D', SAD = 'E',
-	RELAXED = 'F', AFRAID = 'G', DOUBTFUL = 'H',
+	RELAXED = 'F', AFRAID = 'G', CAUTIOUS = 'H',
 	SURPRISED = 'I', ANNOYED = 'J', EMBARASSED = 'K',
 	ANXIOUS = 'L', READING_MESSAGE = 1, LISTENING_MESSAGE = 2, WAIT = 3
 };
@@ -98,10 +98,6 @@ bool do_sad(Characters c = LELE);
 bool do_angry(Characters c = LELE);
 bool do_shocked(Characters c = LELE);
 bool do_doubtful(Characters c = LELE);
-
-//test functions
-bool undo_happy();
-bool test();
-bool test_synchro();
+bool do_annoyed(Characters c = LELE);
 
 #endif

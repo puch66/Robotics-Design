@@ -13,6 +13,11 @@ long randNumber;
 Characters towards = ALL;
 Characters next_towards = ALL;
 
+//message buffer
+#define SIZE 3
+String buffer[SIZE] = {"ZZZZ", "ZZZZ", "ZZZZ"};
+bool waiting_for_action = false;
+
 void setup() {
   Serial.begin(115200);         // Start the Serial communication to send messages to the computer
 
@@ -52,7 +57,10 @@ void main_loop(void * pvParameters) {
         towards = next_towards;
         next_state =  IDLE;
         next_towards = ALL;
-        if(state!=IDLE && state!=READING_MESSAGE && state != LISTENING_MESSAGE && state!=WAIT) send_emotion(state, towards);
+        if(state!=IDLE && state!=READING_MESSAGE && state != LISTENING_MESSAGE && state!=WAIT) {
+          waiting_for_action = true;
+          send_emotion(state, towards);
+        }
       }
     }
 
@@ -68,13 +76,13 @@ void main_loop(void * pvParameters) {
 
     if(state == CAUTIOUS) if(do_doubtful(towards)) state = RESET_POSITION; 
 
-    if(state == ANNOYED) if(do_annoyed(towards)) state = RESET_POSITION; 
+    if(state == ANNOYED) if(do_annoyed(towards)) state = RESET_POSITION;
 
     if(state == READING_MESSAGE) {
       //num variable is 1 if G5 is sent from god, 2 if G6 is sent
       int num = ((message[1] < 58) ? message[1] - '0' : message[1] - 55) -4;
       if(play_song(num)) {
-        client.print("GG");
+        client.print("GG\n");
         
         //logic when after reading a god message arriving to you
         if(num == 1) {
@@ -140,14 +148,21 @@ void network_loop(void * pvParameters) {
 
     if(Serial.available()) {  //debug
       String send = Serial.readString();
-      client.print(send);
+      if(send == "B") {
+        for(int i = 0; i < SIZE; i++) {
+          Serial.println(buffer[i]);
+        }
+      }
+      else client.print(send);
     }
 
-    if(client.available())  {
-      message = client.readString();
-      Serial.println(message);
+    if(client.available()) {
+      //String tmp = client.readString();
+      String tmp = client.readStringUntil('\n');
+      Serial.println(tmp);
       
       //message sent by god
+      if(tmp.length() == 2) message = tmp;
       if(state == WAIT && message.length() == 2 && message[0] == 'G' && message[1] == 'G') {
         //another character just finished reading the message, decide how to react
         next_towards = (Characters)compute_receiver(waiting_for);
@@ -161,6 +176,10 @@ void network_loop(void * pvParameters) {
           //GF signal from god means return to idle
           state = RESET_POSITION;
           next_state = IDLE;
+          waiting_for_action = false;
+          for(int i = 0; i < SIZE; i++) {
+            buffer[i] = "ZZZZ";
+          }
         }
         else if((num%2!=0 && (num+1)/2 == (char)LELE - '0') || (num%2==0 && num/2 == (char)LELE - '0')) {
           //if it's a message directed to us, read it out loud
@@ -173,14 +192,26 @@ void network_loop(void * pvParameters) {
           next_state = LISTENING_MESSAGE;
         }              
       }
+      if(tmp.length() == 4) {
+        if(is_interesting_to_us(tmp)) {
+          if(priority(tmp) >= worst_priority(buffer)) {
+            buffer[get_worst_index(buffer)] = tmp;
+            //Serial.println(get_worst_index(buffer));
+          }
+        }
+        else Serial.println("Discarded");
+      }
+    }
+
+    if(waiting_for_action && best_priority(buffer) > -90)  {
+      int index = get_best_index(buffer);
+      message = buffer[index];
+      buffer[index] = "ZZZZ";
 
       //emotion sent by someone
-      else if(message.length() == 4) {
-        if(is_interesting_to_us(message)) {
-          next_towards = (Characters)compute_receiver(message);
-          next_state = compute_state_for_emotion(message);          
-        }
-      }
+      next_towards = (Characters)compute_receiver(message);
+      next_state = compute_state_for_emotion(message);
+      waiting_for_action = false;      
     }
     
     delay(10);  
@@ -496,7 +527,8 @@ void send_emotion(State s, Characters t) {
     response += (char)LELE;  //MESSAGE FROM LELE
     response += (char)s; //EMOTION
     response += (char)t; //RECEIVER OF THE MESSAGE    
-    response += '0';   //INTENSITY: NONE
+    response += '3';   //INTENSITY: ALWAYS MAX
+    response += '\n';
 
     //Send message WHEN EMOTION IS STARTING
     client.print(response);
@@ -512,5 +544,65 @@ void hard_reset() {
   repeat_actions = 0;
   init_song = false;
   listening_finished = false;
-  myDFPlayer.pause();  //pause the mp3
+  myDFPlayer.pause();  //pause the mp3  
 }
+
+
+int priority(String m) {
+  int priority = 0;
+
+  // -100 if message is irrelevant
+  if(!is_interesting_to_us(m)) return -100;
+
+  // +5 if receiver is LELE
+  if(m[2] == (char)LELE) priority += 5;
+
+  // +4 if sender is CARLOTTA or PEPPE
+  if(m[0] == (char)CARLOTTA || m[0] == (char)PEPPE) priority += 4;
+
+  // +3 if sender is COSIMO
+  // +3 if receiver is CARLOTTA or PEPPE
+  if(m[0] == (char)COSIMO || m[2] == (char)CARLOTTA || m[2] == (char)PEPPE) priority +=3;
+
+  // +1 if receiver is everyone
+  if(m[2] == (char)ALL) priority +=1;
+
+  // -3 if sender is the same of the message to which we just reacted
+  if(message.length() == 4 && m[0] == message[0]) priority -=3;
+
+  return priority;
+}
+
+int best_priority(String buf[]) {
+  int best = -1000;
+  for(int i = 0; i < SIZE; i++) {
+    if(priority(buf[i]) > best) best = priority(buf[i]);
+  }    
+  return best;
+}
+
+int worst_priority(String buf[]) {
+  int worst = 1000;
+  for(int i = 0; i < SIZE; i++) {
+    if(priority(buf[i]) < worst) worst = priority(buf[i]);
+  }    
+  return worst;
+}
+
+int get_best_index(String buf[]) {
+  for(int i = 0; i < SIZE; i++) {
+    if(priority(buf[i]) == best_priority(buf)) return i;
+  }    
+  return -1;
+}
+
+int get_worst_index(String buf[]) {
+  for(int i = 0; i < SIZE; i++) {
+    if(priority(buf[i]) == worst_priority(buf)) return i;
+  }    
+  return -1;
+}
+
+
+
+

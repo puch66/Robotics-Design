@@ -220,6 +220,8 @@ bool set_mouth(int m, float v = 0.01){
 // m = 2 -> back
 // m = 3 -> sad
 // m = 4 -> angry
+// m = 5 -> doubtful
+// m = 6 -> happy
 bool set_chest(int m, float v = 0.01) {
     if (m == 0) {
         s[8].new_position({ S8_FRONT,v });
@@ -239,6 +241,9 @@ bool set_chest(int m, float v = 0.01) {
     else if (m == 5) {
         s[8].new_position({ S8_DOUBTFUL,v });
     }
+    else if (m == 6) {
+        s[8].new_position({ S8_HAPPY,v });
+    }
 
     if (s[8].get_done()) {
         s[8].set_done(false);
@@ -250,6 +255,10 @@ bool set_chest(int m, float v = 0.01) {
 // m = 0 -> left
 // m = 1 -> mid position
 // m = 2 -> right
+// m = 3 -> idle_left
+// m = 4 -> idle_right
+// m = 5 -> doubtful_left
+// m = 6 -> doubtful_right
 bool set_body_rotation(int m, float v = 0.05) {
     if (m == 0) {
         s[10].new_position({ S10_LEFT,v });
@@ -259,6 +268,18 @@ bool set_body_rotation(int m, float v = 0.05) {
     }
     else if (m == 2) {
         s[10].new_position({ S10_RIGHT,v });
+    }
+    else if (m == 3) {
+        s[10].new_position({ S10_IDLE_LEFT,v });
+    }
+    else if (m == 4) {
+        s[10].new_position({ S10_IDLE_RIGHT,v });
+    }
+    else if (m == 5) {
+        s[10].new_position({ S10_DOUBTFUL_LEFT,v });
+    }
+    else if (m == 6) {
+        s[10].new_position({ S10_DOUBTFUL_RIGHT,v });
     }
 
     if (s[10].get_done()) {
@@ -293,6 +314,7 @@ bool set_body_rotation(int m, float v, Characters character) {
 // m = 2 -> down
 // m = 3 -> sad
 // m = 4 -> angry
+// m = 5 -> happy
 bool set_neck(int m, float v = 0.02) {
     if (m == 0) {
         s[11].new_position({ S11_UP,v });
@@ -308,6 +330,9 @@ bool set_neck(int m, float v = 0.02) {
     }
     else if (m == 4) {
         s[11].new_position({ S11_ANGRY,v });
+    }
+    else if (m == 5) {
+        s[11].new_position({ S11_HAPPY,v });
     }
 
     if (s[11].get_done()) {
@@ -391,18 +416,19 @@ bool set_tail(int m, float v = 0.5) {
 // set_mouth = 0.15
 // set_chest = 0.1
 // set_body_rotation = 0.2
+// set_neck = ???
 // move_eyes = 0.2
 // roll_eyes = 1.0
 // set_tail = 0.5
 bool reset_position() {
     if (!done[0]) done[0] = set_eyelids(2);
-    if (!done[1]) done[1] = set_mouth(0);
+    if (!done[1]) done[1] = set_mouth(0,0.15);
     if (!done[2]) done[2] = set_chest(1, 0.075);
     if (!done[3]) done[3] = set_body_rotation(1, 0.2);
-    if (!done[4]) done[4] = set_neck(1);
+    if (!done[4]) done[4] = set_neck(1, 0.015);
     if (!done[5]) done[5] = move_eyes(1);
     if (!done[6]) done[6] = roll_eyes(1);
-    if (!done[7]) done[7] = set_tail(0);
+    if (!done[7]) done[7] = set_tail(1);
 
     if (done[0] && done[1] && done[2] && done[3] && done[4] && done[5] && done[6] && done[7]) {
         done[0] = false; done[1] = false; done[2] = false; done[3] = false; done[4] = false; done[5] = false; done[6] = false; done[7] = false;
@@ -413,29 +439,64 @@ bool reset_position() {
 
 bool do_idle(Characters c) {
     return true;
-    /*if (i == 0) if (set_body_rotation(1, 0.01, c)) i++;
-    if (i == 1) if (set_body_rotation(1, 0.01, ALL)) i++;
-    if (i == 2) if (s[14].wait(500)) i++;
-    if (i == 3) if (set_body_rotation(1, 0.01, BIANCA)) i++;
-    if (i == 4) if (s[14].wait(500)) i++;
+    //if (i == 0) if (set_body_rotation(1, 0.01, c)) i++;
+    if (i == 0) if (set_eyelids(0,0.2)) i++;
+    if (i == 1) if (set_eyelids(2,0.2)) i++;
+    if (i == 2) if (set_eyelids(0,0.2)) i++;
+    if (i == 3) if (set_eyelids(2,0.2)) i++;
+    if (i == 4) {
+        if (!done[0]) done[0] = set_body_rotation(3, 0.1);
+        if (!done[1]) done[1] = set_tail(1);
+        if (!done[2]) done[2] = s[14].wait(750);
+        if (done[0] && done[1] && done[2]) {
+            done[0] = false; done[1] = false; done[2];
+            i++;
+        }
+    }
     if (i == 5) {
+        if (!done[0]) done[0] = set_body_rotation(4, 0.1);
+        if (!done[1]) done[1] = set_tail(2);
+        if (!done[2]) done[2] = s[14].wait(750);
+        if (done[0] && done[1] && done[2]) {
+            done[0] = false; done[1] = false; done[2];
+            i++;
+        }
+    }
+    if (i == 6) {
         i = 0;
         return true;
     }
-    else return false;*/
+    else return false;
 }
 
 bool do_happy(Characters c) {
   if(i == 0) if (set_body_rotation(1, 0.2, c)) i++;
   if(i == 1) if(set_eyelids(2, 0.02)) i++;
-  if(i == 2) if(set_mouth(2, 0.02)) i++;
-  if (i == 3) if (set_tail(2)) i++;
-  if (i == 4) if (set_tail(1)) i++;
-  if (i == 5 && repeat_actions < 9) {
-      repeat_actions++;
-      i = 3;
+  if (i == 2) if (set_neck(5)) i++;
+  if(i == 3) if(roll_eyes(0)) i++;
+  if (i == 4) {
+      if (!done[0]) done[0] = set_chest(6, 0.1);
+      if (!done[1]) done[1] = set_tail(2);
+      if (!done[2]) done[2] = set_mouth(1, 0.15);
+      if (done[0] && done[1] && done[2]) {
+          done[0] = false; done[1] = false; done[2] = false;
+          i++;
+      }
   }
-  if(i == 5 && repeat_actions == 9) {
+  if (i == 5) {
+      if (!done[0]) done[0] = set_chest(1, 0.1);
+      if (!done[1]) done[1] = set_tail(1);
+      if (!done[2]) done[2] = set_mouth(0, 0.15);
+      if (done[0] && done[1] && done[2]) {
+          done[0] = false; done[1] = false; done[2] = false;
+          i++;
+      }
+  }
+  if (i == 6 && repeat_actions < 9) {
+      repeat_actions++;
+      i = 4;
+  }
+  if(i == 6 && repeat_actions == 9) {
     i = 0;
     repeat_actions = 0;
     return true;
@@ -446,13 +507,18 @@ bool do_happy(Characters c) {
 bool do_sad(Characters c) {
     if (i == 0) if(set_body_rotation(1, 0.2, c)) i++;
     if (i == 1) {
-        if (set_eyelids(1)) i++;
+        if (!done[0]) done[0] = set_eyelids(1);
+        if (!done[1]) done[1] = set_tail(0);
+        if (done[0] && done[1]) {
+            done[0] = false; done[1] = false;
+            i++;
+        }
     }
     if (i == 2) {
         if (!done[0]) done[0] = set_eyelids(4);
         if (!done[1]) done[1] = roll_eyes(2);
         if (!done[2]) done[2] = set_chest(3);
-        if (!done[3]) done[3] = set_neck(3);
+        if (!done[3]) done[3] = set_neck(3,0.01);
         if (done[0] && done[1] && done[2] && done[3] ) {
             done[0] = false; done[1] = false; done[2] = false; done[3] = false;
             i++;
@@ -490,8 +556,16 @@ bool do_sad(Characters c) {
             i++;
         }
     }
-
     if (i == 7) {
+        if (!done[0]) done[0] = set_body_rotation(2, 0.075, c);
+        if (!done[1]) done[1] = s[14].wait(2000);
+        if (done[0] && done[1]) {
+            done[0] = false; done[1] = false;
+            i++;
+        }
+    }
+
+    if (i == 8) {
         i = 0;
         return true;
     }
@@ -502,9 +576,10 @@ bool do_angry(Characters c) {
     if (i == 0) if (set_body_rotation(1, 0.2, c)) i++;
     if (i == 1) {
         if (!done[0]) done[0] = set_eyelids(6);
+        if (!done[2]) done[2] = set_tail(3);
         if (!done[1]) done[1] = s[14].wait(1000);
-        if (done[0] && done[1]) {
-            done[0] = false; done[1] = false;
+        if (done[0] && done[1] && done[2]) {
+            done[0] = false; done[1] = false; done[2] = false;
             i++;
         }
     }
@@ -565,16 +640,32 @@ bool do_angry(Characters c) {
 
 bool do_shocked(Characters c) {
     if (i == 0) if (set_body_rotation(1, 0.2, c)) i++;
-    if (i == 1) {
+    if (i == 1) if (set_tail(2)) i++;
+    if (i == 2) {
         if (!done[0]) done[0] = set_eyelids(3);
         if (!done[1]) done[1] = set_mouth(2, 0.15);
+        if (!done[2]) done[2] = s[14].wait(1500);
+        if (done[0] && done[1] && done[2]) {
+            done[0] = false; done[1] = false; done[2] = false;
+            i++;
+        }
+    }
+    if (i == 3) {
+        if (!done[0]) done[0] = set_tail(0);
+        if (!done[1]) done[1] = s[14].wait(1000);
         if (done[0] && done[1]) {
             done[0] = false; done[1] = false;
             i++;
         }
     }
-    if (i == 2) if (s[14].wait(3000)) i++;
-    if (i == 3) {
+    if (i == 4) if (set_neck(4)) i++;
+    if (i == 5) if (s[14].wait(500)) i++;
+    if (i == 6) if (set_eyelids(0,0.2)) i++;
+    if (i == 7) if (set_eyelids(3,0.2)) i++;
+    if (i == 8) if (set_eyelids(0,0.2)) i++;
+    if (i == 9) if (set_eyelids(3,0.2)) i++;
+    if (i == 10) if (s[14].wait(1500)) i++;
+    if (i == 11) {
         i = 0;
         return true;
     }
@@ -584,7 +675,7 @@ bool do_shocked(Characters c) {
 bool do_doubtful(Characters c) {
     if (i == 0) if (set_chest(5, 0.1)) i++;
     if (i == 1) {
-        if (!done[0]) done[0] = set_body_rotation(2, 0.2, ALL);
+        if (!done[0]) done[0] = set_body_rotation(6, 0.2);
         if (!done[1]) done[1] = s[14].wait(1000);
         if (done[0] && done[1]) {
             done[0] = false; done[1] = false;
@@ -593,7 +684,7 @@ bool do_doubtful(Characters c) {
     }
     if (i == 2) if (set_body_rotation(1, 0.2)) i++;
     if (i == 3) {
-        if (!done[0]) done[0] = set_body_rotation(0, 0.2, BIANCA);
+        if (!done[0]) done[0] = set_body_rotation(5, 0.2);
         if (!done[1]) done[1] = s[14].wait(1000);
         if (done[0] && done[1]) {
             done[0] = false; done[1] = false;
@@ -602,7 +693,7 @@ bool do_doubtful(Characters c) {
     }
     if (i == 4) if (set_body_rotation(1, 0.2)) i++;
     if (i == 5) {
-        if (!done[0]) done[0] = set_body_rotation(2, 0.2, ALL);
+        if (!done[0]) done[0] = set_body_rotation(6, 0.2);
         if (!done[1]) done[1] = s[14].wait(1000);
         if (done[0] && done[1]) {
             done[0] = false; done[1] = false;
@@ -653,55 +744,60 @@ bool do_doubtful(Characters c) {
     else return false;
 }
 
-
-//test functions
-bool undo_happy() {
-  if(i == 0) if(set_eyelids(1, 0.01)) i++;
-  if(i == 1) if(set_mouth(0, 0.01)) i++;
-  //Serial.println(i);
-  if(i == 2) {
-    i = 0;
-    return true;
-  }
-  else return false;
-}
-
-bool test() {
-    if (i == 0) if (set_chest(0, 0.015)) i++;
-    if (i == 1) if (set_chest(2, 0.015)) i++;
-    if (i == 2) if (set_chest(1, 0.015)) i++;
-    if (i == 3) if (set_body_rotation(0, 0.01)) i++;
-    if (i == 4) if (set_body_rotation(2, 0.01)) i++;
-    if (i == 5) if (set_body_rotation(1, 0.01)) i++;
-    if (i == 6) if (set_neck(0, 0.01)) i++;
-    if (i == 7) if (set_neck(2, 0.01)) i++;
-    if (i == 8) if (set_neck(1, 0.01)) i++;
-
-    //Serial.println(i);
-    Serial.println(done[10]);
-    if (i == 9) {
-        i = 0;
-        return true;
+bool do_annoyed(Characters c) {
+    if (i == 0) if (set_body_rotation(1, 0.2, c)) i++;
+    if (i == 1) {
+        if (!done[0]) done[0] = set_eyelids(4, 0.02);
+        if (!done[1]) done[1] = s[14].wait(1500);
+        if (done[0] && done[1]) {
+            done[0] = false; done[1] = false;
+            i++;
+        }
     }
-    else return false;
-}
-
-bool test_synchro() {
-    if (i == 0) {
-        if (!done[0]) done[0] = set_chest(0, 0.02);
-        if (!done[1]) done[1] = set_neck(0, 0.02);
-
+    if (i == 2) {
+        if (!done[0]) done[0] = set_chest(4, 0.1);
+        if (!done[1]) done[1] = s[14].wait(1500);
+        if (done[0] && done[1]) {
+            done[0] = false; done[1] = false;
+            i++;
+        }
+    }
+    if (i == 3) {
+        if (!done[0]) done[0] = roll_eyes(2);
+        if (!done[1]) done[1] = s[14].wait(1000);
+        if (done[0] && done[1]) {
+            done[0] = false; done[1] = false;
+            i++;
+        }
+    }
+    if (i == 4) {
+        if (!done[0]) done[0] = roll_eyes(1);
+        if (!done[1]) done[1] = s[14].wait(1500);
+        if (done[0] && done[1]) {
+            done[0] = false; done[1] = false;
+            i++;
+        }
+    }
+    if (i == 5) {
+        if (!done[0]) done[0] = move_eyes(2);
+        if (!done[1]) done[1] = s[14].wait(1000);
+        if (done[0] && done[1]) {
+            done[0] = false; done[1] = false;
+            i++;
+        }
+    }
+    if (i == 6) {
+        if (!done[0]) done[0] = set_body_rotation(2, 0.2, c);
+        if (!done[1]) done[1] = s[14].wait(1000);
         if (done[0] && done[1]) {
             done[0] = false; done[1] = false;
             i++;
         }
     }
 
-    //Serial.println(i);
-    if (i == 1) {
+    if (i == 7) {
         i = 0;
         return true;
     }
     else return false;
-
 }
