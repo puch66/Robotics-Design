@@ -1,40 +1,22 @@
 # Robotics-Design
-*This repository provides some architectures to manage the communication between our robot and the other ones (plus the god) and to implement the robot movements*
+*This repository provides the esp32 code for CamaLele robot, developed for the Robotics and Design course at Politecnico di Milano. There are also included some architectures to manage the communication between our robot and the other ones developed in the course. Finally, a manual controller to move the robot via wifi is provided for presentation and debug purposes*
 
-# TODO
-
-## martedì
-- [x] attacco collo-testa
-- [x] implementare 1/2 emozioni
-- [x] comunicazione client (2 cores) - server
-
-## 23/05
-- [x] comprare polipropilene al brico
-- [x] vestito -> camicia bambino
-- [x] ristampare base -> con guida per coda
-- [ ] riempire base sotto (?)
-- [ ] muovere sopracciglia (?)
-- [x] dipingere palpebre e occhi e coda
-- [x] muovere coda
-- [x] implementare emozioni: 6/6
-- [x] macchina a stati per decidere a cosa reagire
-- [x] mp3 per leggere messaggi
-- [x] decidere versi da fare
-- [ ] mettere gommini per far stare in piedi il robot
-- [x] decidere messaggi da leggere
-
-## ultime cose
-- [ ] molle
-- [x] coda (movimento + verniciatura)
-- [x] idle state spezzettato
-- [x] audio nelle emozioni
-- [x] incollare board
-- [x] muovere la bocca mentre legge il messaggio
-
+## Arduino code for the esp32
+### Installation and run
+- download and install Arduino IDE on your laptop [Arduino IDE download](https://www.arduino.cc/en/software)
+- in esp32_final/wifi_setup.h change lines 11-12 with your wifi ID and password
+- open esp32_final.ino file with Arduino and upload it on the esp_32
 
 ## Mock server to simulate the god
+- download and install python on your laptop [Python Windows download](https://www.python.org/downloads/windows/)
+- open a terminal in the *server* folder and run 
+  ``` bash
+   python server.py
+  ```
+
+## Manual controller
 ### Installation and run
- - download node.js and install on your laptop: [Node.s Windows download](https://nodejs.org/en/download)
+ - download node.js and install on your laptop: [Node.js Windows download](https://nodejs.org/en/download)
  - open a terminal in the *server* folder and run 
    ``` bash
    node server.js 
