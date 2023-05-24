@@ -16,12 +16,20 @@
 - [ ] muovere sopracciglia (?)
 - [x] dipingere palpebre e occhi e coda
 - [x] muovere coda
-- [ ] implementare emozioni: 3/6
-- [ ] macchina a stati per decidere a cosa reagire
+- [x] implementare emozioni: 6/6
+- [x] macchina a stati per decidere a cosa reagire
 - [x] mp3 per leggere messaggi
-- [ ] decidere versi da fare
+- [x] decidere versi da fare
 - [ ] mettere gommini per far stare in piedi il robot
 - [x] decidere messaggi da leggere
+
+## ultime cose
+- [ ] molle
+- [x] coda (movimento + verniciatura)
+- [x] idle state spezzettato
+- [x] audio nelle emozioni
+- [x] incollare board
+- [x] muovere la bocca mentre legge il messaggio
 
 
 ## Mock server to simulate the god
