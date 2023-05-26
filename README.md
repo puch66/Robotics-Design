@@ -7,7 +7,7 @@
 - in esp32_final/wifi_setup.h change lines 11-12 with your wifi ID and password
 - open esp32_final.ino file with Arduino and upload it on the esp_32
 
-## Mock server to simulate the god
+## God server
 - download and install python on your laptop [Python Windows download](https://www.python.org/downloads/windows/)
 - open a terminal in the *server* folder and run 
   ``` bash
