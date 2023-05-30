@@ -5,6 +5,7 @@
 #include <WebServer.h>
 
 //WiFi credentials
+//CHANGE WIFI CREDENTIAL WITH YOURS!
 //const char* ssid = "AndroidAPFD5D";    // The SSID (name) of the Wi-Fi network you want to connect to
 //const char* password = "valerioo";     // The password of the Wi-Fi network
 const char* ssid = "Triskarone";

@@ -41,8 +41,6 @@ void setup() {
 
   //set seed for random number generation
   randomSeed(analogRead(0));
-
-  //myDFPlayer.play(1);
 }
 
 void main_loop(void * pvParameters) {
@@ -54,7 +52,7 @@ void main_loop(void * pvParameters) {
         towards = next_towards;
         next_state =  IDLE;
         next_towards = ALL;
-        if(state!=IDLE && state!=READING_MESSAGE && state != LISTENING_MESSAGE) send_emotion();
+        if(state!=IDLE && state!=READING_MESSAGE && state != LISTENING_MESSAGE && state!=WAIT) send_emotion(state, towards);
       }
     }
 
@@ -68,25 +66,26 @@ void main_loop(void * pvParameters) {
 
     if(state == SHOCKED) if(do_shocked(towards)) state = RESET_POSITION;
 
-    if(state == DOUBTFUL) if(do_doubtful(towards)) state = RESET_POSITION; 
+    if(state == CAUTIOUS) if(do_doubtful(towards)) state = RESET_POSITION; 
+
+    if(state == ANNOYED) if(do_annoyed(towards)) state = RESET_POSITION; 
 
     if(state == READING_MESSAGE) {
       //num variable is 1 if G5 is sent from god, 2 if G6 is sent
       int num = ((message[1] < 58) ? message[1] - '0' : message[1] - 55) -4;
       if(play_song(num)) {
-        //TODO: implement logic when after reading a god message arriving to you
-        randNumber = random(100);
-        if(randNumber < 85) {
+        client.print("GG");
+        
+        //logic when after reading a god message arriving to you
+        if(num == 1) {
           state= RESET_POSITION;
-          next_state = SAD;
-          next_towards = LELE;
-          Serial.println("******START SAD*******");
+          next_state = ANGRY;
+          next_towards = ALL;
         }
         else {
           state= RESET_POSITION;
           next_state = SHOCKED;
-          next_towards = LELE;
-          Serial.println("******START SHOCKED*******");
+          next_towards = ALL;
         }  
       }
     }
@@ -95,14 +94,17 @@ void main_loop(void * pvParameters) {
       int num = (message[1] < 58) ? message[1] - '0' : message[1] - 55;
       num = num%2 == 0 ? num/2 : (num+1)/2;
       //Serial.println(num);
-      if(set_body_rotation(1,0.2 , (Characters)(num+'0'))) state = WAIT; 
+      towards = (Characters)(num+'0');
+      if(set_body_rotation(1,0.2 , towards)) {
+        waiting_for = message;
+        state = WAIT;
+      } 
     }
 
     if(state == WAIT) {
-      if(s[14].wait(3000)) {
+      if(listening_finished) {
         state = RESET_POSITION;
-        next_state = IDLE;
-        next_towards = LELE;
+        listening_finished = false;
       }
     }
 
@@ -146,7 +148,13 @@ void network_loop(void * pvParameters) {
       Serial.println(message);
       
       //message sent by god
-      if(message.length() == 2 && message[0] == 'G') {
+      if(state == WAIT && message.length() == 2 && message[0] == 'G' && message[1] == 'G') {
+        //another character just finished reading the message, decide how to react
+        next_towards = (Characters)compute_receiver(waiting_for);
+        next_state = compute_state_for_GX(waiting_for);
+        listening_finished = true;
+      }
+      else if(message.length() == 2 && message[0] == 'G' && message[1] != 'G') {
         hard_reset();
         int num = (message[1] < 58) ? message[1] - '0' : message[1] - 55;
         if(message[1] == 'F') {
@@ -168,19 +176,9 @@ void network_loop(void * pvParameters) {
 
       //emotion sent by someone
       else if(message.length() == 4) {
-        //for the moment, discard all messages which are not being directed to us
-        //if a message is directed to us, reply with random emotion
-        if(message[2] == (char)LELE) {
-          randNumber = random(100);
+        if(is_interesting_to_us(message)) {
           next_towards = (Characters)compute_receiver(message);
-          if(randNumber < 50) {
-            next_state = SAD;
-            Serial.println("******START SAD*******");
-          }
-          else {
-            next_state = SHOCKED;
-            Serial.println("******START SHOCKED*******");
-          }  
+          next_state = compute_state_for_emotion(message);          
         }
       }
     }
@@ -229,11 +227,11 @@ void handle_controller() {
         Serial.print("to bit: ");
         Serial.println(s[servo].get_servo_pos());
 
-        if (servo == 6 || servo == 8) {
+        if (servo == 6 /*|| servo == 8*/) {
             s[servo + 1].set_servo_pos(s[servo + 1].get_servo_pos() - power * up);
             controller.setPWM(servo + 1, 0, s[servo + 1].get_servo_pos());
         }
-        else if (servo == 7 || servo == 9) {
+        else if (servo == 7 /*|| servo == 9*/) {
             s[servo - 1].set_servo_pos(s[servo - 1].get_servo_pos() - power * up);
             controller.setPWM(servo - 1, 0, s[servo - 1].get_servo_pos());
         }
@@ -276,10 +274,162 @@ void handle_emotion() {
     }
     if (server.arg("emotion").equals("doubtful")) {
         Serial.println("******START DOUBTFUL*******");
-        next_state = DOUBTFUL;
+        next_state = CAUTIOUS;
+        next_towards = BIANCA;
+        server.send(200, "text/html", "<p>Hello world!</p>");
+    }
+    if (server.arg("emotion").equals("annoyed")) {
+        Serial.println("******START ANNOYED*******");
+        next_state = ANNOYED;
         next_towards = LELE;
         server.send(200, "text/html", "<p>Hello world!</p>");
     }
+}
+
+bool is_interesting_to_us(String message) {
+  if(message[2] == (char) LELE) return true;
+  else if(message[2] == (char) ALL) return true;
+  else { 
+    if(message[1] == (char) ANGRY) {
+      if(message[2] == (char) PEPPE) return true;
+      else if(message[2] == (char) CARLOTTA) return true;
+    }
+    else if(message[1] == (char) SHOCKED) {
+      if(message[2] == (char) CARLOTTA) return true;
+    }
+    else if(message[1] == (char) CAUTIOUS) {
+      if(message[2] == (char) CARLOTTA) return true;
+    }
+    else if(message[1] == (char) ANNOYED) {
+      if(message[2] == (char) PEPPE) return true;
+    }
+  }
+  return false;
+}
+
+State compute_state_for_GX(String message) {
+  if(message[1] == '1') return HAPPY;
+  else if(message[1] == '2') return SHOCKED;
+  else if(message[1] == '3') return SHOCKED;
+  else if(message[1] == '4') return CAUTIOUS;
+  else if(message[1] == '5') return ANGRY;
+  else if(message[1] == '6') return SHOCKED;
+  else if(message[1] == '7') return SAD;
+  else if(message[1] == '8') return ANGRY;
+  else if(message[1] == '9') return HAPPY;
+  else if(message[1] == 'A') return HAPPY;
+  else if(message[1] == 'B') return SHOCKED;
+  else if(message[1] == 'C') return ANNOYED;
+  else if(message[1] == 'D') return CAUTIOUS;
+  else if(message[1] == 'E') return SHOCKED;
+}
+
+State compute_state_for_emotion(String message) {
+  randNumber = random(100);
+  //message is sent to you
+  if(message[2] == (char) LELE) {
+    if(message[1] == (char) HAPPY) return HAPPY;
+    else if(message[1] == (char) ANGRY) {
+      if(message[0] == (char) CARLOTTA) {
+        if(randNumber < 33) return ANNOYED;
+        else if(randNumber < 67) return ANGRY;
+        else return SAD;
+      }
+      else if(message[0] == (char) PEPPE) return SAD;
+      else return ANGRY;
+    }
+    else if(message[1] == (char) SHOCKED) {
+      if(message[0] == (char) CARLOTTA) {
+        if(randNumber < 50) return SAD;
+        else return CAUTIOUS;
+      }
+      else if(message[0] == (char) COSIMO) return ANGRY;
+      else return SHOCKED;
+    }
+    else if(message[1] == (char) SAD) {
+      if(message[0] == (char) CARLOTTA) {
+        if(randNumber < 50) return SAD;
+        else return ANGRY;
+      }
+      else if(message[0] == (char) COSIMO) return ANGRY;
+      else return SAD;      
+    }
+    else if(message[1] == (char) RELAXED) return HAPPY;
+    else if(message[1] == (char) AFRAID) return SAD;
+    else if(message[1] == (char) CAUTIOUS) {
+      if(randNumber < 50) return ANNOYED;
+      else return CAUTIOUS;
+    }
+    else if(message[1] == (char) SURPRISED) return ANNOYED;
+    else if(message[1] == (char) ANNOYED) return ANGRY;
+    else if(message[1] == (char) EMBARASSED) {
+      if(randNumber < 33) return ANNOYED;
+      else if(randNumber < 67) return ANGRY;
+      else return SAD;
+    }
+    else if(message[1] == (char) ANXIOUS) {
+      if(randNumber < 50) return ANGRY;
+      else return CAUTIOUS;
+    }
+  }
+  //message is sent to everyone
+  else if(message[2] == (char) ALL) {
+    if(message[1] == (char) HAPPY) return HAPPY;
+    else if(message[1] == (char) ANGRY) {
+      if(message[0] == (char) PEPPE) return ANGRY;
+      else {
+        if(randNumber < 50) return ANNOYED;
+        else return ANGRY;
+      }
+    }
+    else if(message[1] == (char) SHOCKED) {
+      if(message[0] == (char) CARLOTTA) return ANGRY;
+      else if(message[0] == (char) COSIMO) return ANGRY;
+      else return SAD;
+    }
+    else if(message[1] == (char) SAD) {
+      if(message[0] == (char) CARLOTTA) {
+        if(randNumber < 50) return SAD;
+        else return CAUTIOUS;
+      }
+      else if(message[0] == (char) PEPPE) return ANGRY;
+      else  {
+        if(randNumber < 50) return ANNOYED;
+        else return CAUTIOUS;
+      }
+    }
+    else if(message[1] == (char) RELAXED) return HAPPY;
+    else if(message[1] == (char) AFRAID) {
+      if(randNumber < 50) return SAD;
+      else return CAUTIOUS;
+    }
+    else if(message[1] == (char) CAUTIOUS) {
+      if(randNumber < 50) return ANNOYED;
+      else return CAUTIOUS;
+    }
+    else if(message[1] == (char) SURPRISED) return HAPPY;
+    else if(message[1] == (char) ANNOYED) return ANNOYED;
+    else if(message[1] == (char) EMBARASSED) return HAPPY;
+    else if(message[1] == (char) ANXIOUS) return CAUTIOUS;
+  }
+  //message is sent to someone else
+  else { 
+    if(message[1] == (char) ANGRY) {
+      if(message[2] == (char) PEPPE) return ANGRY;
+      else if(message[2] == (char) CARLOTTA) return ANGRY;
+    }
+    else if(message[1] == (char) SHOCKED) {
+      if(message[2] == (char) CARLOTTA) return CAUTIOUS;
+    }
+    else if(message[1] == (char) CAUTIOUS) {
+      if(message[2] == (char) CARLOTTA) return CAUTIOUS;
+    }
+    else if(message[1] == (char) ANNOYED) {
+      if(message[2] == (char) PEPPE) return ANGRY;
+    }
+  }
+
+  return IDLE;
 }
 
 char compute_receiver(String message) {
@@ -295,18 +445,57 @@ char compute_receiver(String message) {
   }
   //emotion sent by someone
   else if(message.length() == 4) {
-    return message[0]; //MESSAGE TOWARDS WHO SENT YOU THE EMOTION
+    //message is sent to you
+    if(message[2] == (char) LELE) {
+      return message[0]; //MESSAGE TOWARDS WHO SENT YOU THE EMOTION
+    }
+    //message is sent to everyone
+    else if(message[2] == (char) ALL) {
+      if(message[1] == (char) HAPPY) return message[0];
+      else if(message[1] == (char) ANGRY) {
+        if(message[0] == (char) PEPPE) return ALL;
+        else return message[0];
+      }
+      else if(message[1] == (char) SHOCKED) return message[0];
+      else if(message[1] == (char) SAD) {
+        if(message[0] == (char) PEPPE) return ALL;
+        else return message[0];
+      }
+      else if(message[1] == (char) RELAXED) return ALL;
+      else if(message[1] == (char) AFRAID) return message[0];
+      else if(message[1] == (char) CAUTIOUS) return message[0];
+      else if(message[1] == (char) SURPRISED) return ALL;
+      else if(message[1] == (char) ANNOYED) return message[0];
+      else if(message[1] == (char) EMBARASSED) return ALL;
+      else if(message[1] == (char) ANXIOUS) return message[0];
+    }
+    //message is sent to someone else
+    else {
+      if(message[1] == (char) ANGRY) {
+        if(message[2] == (char) PEPPE) return message[0];
+        else if(message[2] == (char) CARLOTTA) return message[0];
+      }
+      else if(message[1] == (char) SHOCKED) {
+        if(message[2] == (char) CARLOTTA) return CARLOTTA;
+      }
+      else if(message[1] == (char) CAUTIOUS) {
+        if(message[2] == (char) CARLOTTA) return CARLOTTA;
+      }
+      else if(message[1] == (char) ANNOYED) {
+        if(message[2] == (char) PEPPE) return message[0];
+      }
+    }
+    
   }
   else return ALL;
 }
 
-void send_emotion() {
-    if(message.length() == 2 && message[1] != '6' && message[1] != '5') return;
+void send_emotion(State s, Characters t) {
     //prepare response
     response = "";
     response += (char)LELE;  //MESSAGE FROM LELE
-    response += (char)state; //EMOTION
-    response += compute_receiver(message); //RECEIVER OF THE MESSAGE    
+    response += (char)s; //EMOTION
+    response += (char)t; //RECEIVER OF THE MESSAGE    
     response += '0';   //INTENSITY: NONE
 
     //Send message WHEN EMOTION IS STARTING
@@ -322,5 +511,6 @@ void hard_reset() {
   i = 0;
   repeat_actions = 0;
   init_song = false;
+  listening_finished = false;
   myDFPlayer.pause();  //pause the mp3
 }
