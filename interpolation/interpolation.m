@@ -19,20 +19,29 @@ end
 character_pos_LEFT = zeros(8,1);
 character_pos_MID = zeros(8,1);
 character_pos_RIGHT = zeros(8,1);
+angle = [-16.875,-56.25,-73.125,0,73.125,56.25,39.375,22.25]';
 LEFT = +30;     % +30°
-RIGHT = -30;    % -30°
+RIGTH = -30;    % -30°
 for i=1:1:8
-    index = i-1;
-    if index<3 
-        angle = (360/16)*(7-(index+8));
-    elseif index==3 
-        angle = 0;
-    else 
-        angle = (360/16)*(7-index);
-    end
     for j=1:1:n
-        character_pos_MID(i) = character_pos_MID(i) + coeff(j)*angle^(j-1);
-        character_pos_RIGHT(i) = character_pos_RIGHT(i) + coeff(j)*(angle+RIGHT)^(j-1);
-        character_pos_LEFT(i) = character_pos_LEFT(i) + coeff(j)*(angle+LEFT)^(j-1);
+      character_pos_MID(i) = character_pos_MID(i) + coeff(j)*angle(i)^(j-1);
+      character_pos_RIGHT(i) = character_pos_RIGHT(i) + coeff(j)*(angle(i)+RIGTH)^(j-1);
+      character_pos_LEFT(i) = character_pos_LEFT(i) + coeff(j)*(angle(i)+LEFT)^(j-1);
     end  
 end
+
+% for i=1:1:8
+%     index = i-1;
+%     if index<3 
+%         angle = (360/16)*(7-(index+8));
+%     elseif index==3 
+%         angle = 0;
+%     else 
+%         angle = (360/16)*(7-index);
+%     end
+%     for j=1:1:n
+%         character_pos_MID(i) = character_pos_MID(i) + coeff(j)*angle^(j-1);
+%         character_pos_RIGHT(i) = character_pos_RIGHT(i) + coeff(j)*(angle+RIGHT)^(j-1);
+%         character_pos_LEFT(i) = character_pos_LEFT(i) + coeff(j)*(angle+LEFT)^(j-1);
+%     end  
+%   end
